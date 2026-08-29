@@ -1,0 +1,190 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f6f6f4;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  color: #171717;
+}
+
+.app {
+  max-width: 600px;
+  margin: auto;
+  padding: 28px 20px 120px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.hello {
+  margin: 0;
+  color: #888;
+}
+
+h1 {
+  margin: 3px 0 0;
+  font-size: 34px;
+}
+
+.status {
+  background: #e5f6e8;
+  color: #25863b;
+  padding: 9px 13px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.hero {
+  background: white;
+  border-radius: 25px;
+  padding: 25px;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 25px rgba(0,0,0,.04);
+}
+
+.hero .label {
+  color: #999;
+  font-size: 13px;
+}
+
+.hero h2 {
+  margin: 8px 0;
+}
+
+.hero p {
+  margin: 0;
+  color: #888;
+  font-size: 13px;
+}
+
+h3 {
+  margin: 25px 3px 13px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.card {
+  background: white;
+  padding: 18px;
+  border-radius: 22px;
+  min-height: 150px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.035);
+}
+
+.icon {
+  font-size: 28px;
+  margin-bottom: 14px;
+}
+
+.card span {
+  display: block;
+  color: #777;
+  font-size: 14px;
+}
+
+.card strong {
+  display: block;
+  font-size: 25px;
+  margin: 6px 0;
+}
+
+.card small {
+  color: #aaa;
+}
+
+.devices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.device {
+  background: white;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.device-icon {
+  width: 45px;
+  height: 45px;
+  background: #f4f4f4;
+  border-radius: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 23px;
+}
+
+.device div:nth-child(2) {
+  flex: 1;
+}
+
+.device strong,
+.device small {
+  display: block;
+}
+
+.device small {
+  color: #999;
+  margin-top: 4px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: #34c759;
+  border-radius: 50%;
+}
+
+nav {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: calc(100% - 32px);
+  max-width: 560px;
+
+  background: rgba(255,255,255,.94);
+  backdrop-filter: blur(18px);
+
+  border-radius: 25px;
+  padding: 10px;
+
+  display: flex;
+  justify-content: space-around;
+
+  box-shadow: 0 8px 30px rgba(0,0,0,.12);
+}
+
+nav button {
+  border: 0;
+  background: none;
+  color: #999;
+  font-size: 11px;
+}
+
+nav button span {
+  display: block;
+  font-size: 21px;
+  margin-bottom: 3px;
+}
+
+nav button.active {
+  color: #111;
+  font-weight: 600;
+}
