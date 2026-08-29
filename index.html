@@ -2,7 +2,12 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  >
+
   <meta name="theme-color" content="#f6f6f4">
 
   <title>Keira 🐱</title>
@@ -14,146 +19,467 @@
 
 <body>
 
-  <section id="login-screen" style="display:none; padding:40px 20px;">
-    <div style="max-width:500px; margin:auto;">
-      <h1>Keira 🐱</h1>
-      <p>Connecte-toi pour accéder au dashboard.</p>
+  <!-- LOGIN -->
+  <section id="login-screen" class="login-screen hidden">
+    <div class="login-card">
+
+      <div class="login-cat">🐱</div>
+
+      <h1>Keira</h1>
+
+      <p>
+        Connecte-toi pour accéder au dashboard.
+      </p>
 
       <input
         id="login-email"
         type="email"
-        placeholder="Ton adresse e-mail"
-        style="
-          width:100%;
-          padding:16px;
-          border-radius:16px;
-          border:1px solid #ddd;
-          font-size:16px;
-          margin:20px 0 10px;
-        "
+        placeholder="Adresse e-mail"
+        autocomplete="email"
       >
 
-      <button
-        id="login-button"
-        style="
-          width:100%;
-          padding:16px;
-          border:0;
-          border-radius:16px;
-          background:#111;
-          color:white;
-          font-size:16px;
-          font-weight:600;
-        "
-      >
-        M'envoyer le lien de connexion
+      <button id="login-button" class="primary-button">
+        Recevoir mon lien de connexion
       </button>
 
-      <p id="login-message" style="color:#777; margin-top:15px;"></p>
+      <p id="login-message" class="muted"></p>
+
     </div>
   </section>
 
 
-  <main class="app" id="dashboard" style="display:none;">
+  <!-- APPLICATION -->
+  <main id="dashboard" class="app hidden">
 
-    <header>
+    <header class="topbar">
+
       <div>
         <p class="hello">Bonjour 👋</p>
         <h1>Keira 🐱</h1>
       </div>
 
-      <div class="status online">
-        ● En ligne
+      <div id="global-status" class="status">
+        ● Chargement
       </div>
+
     </header>
 
 
-    <section class="hero">
-      <div>
-        <span class="label">Aujourd'hui</span>
-        <h2>Chargement...</h2>
-        <p>Dernière mise à jour : <span id="updated">--</span></p>
+    <!-- ================================================== -->
+    <!-- ACCUEIL -->
+    <!-- ================================================== -->
+
+    <section id="page-home" class="page">
+
+      <section class="hero">
+
+        <span class="label">
+          Aujourd'hui
+        </span>
+
+        <h2 id="health-message">
+          Chargement...
+        </h2>
+
+        <p>
+          Dernière mise à jour :
+          <span id="updated">--</span>
+        </p>
+
+      </section>
+
+
+      <h3>Aujourd'hui</h3>
+
+      <section class="grid">
+
+        <article class="card">
+
+          <div class="icon">🍗</div>
+
+          <span>Nourriture</span>
+
+          <strong id="food">
+            -- g
+          </strong>
+
+          <small id="meals">
+            -- distributions
+          </small>
+
+        </article>
+
+
+        <article class="card">
+
+          <div class="icon">💧</div>
+
+          <span>Eau</span>
+
+          <strong id="water">
+            -- ml
+          </strong>
+
+          <small id="drinks">
+            -- passages
+          </small>
+
+        </article>
+
+
+        <article
+          class="card clickable"
+          data-page="health"
+        >
+
+          <div class="icon">⚖️</div>
+
+          <span>Poids</span>
+
+          <strong id="weight">
+            --
+          </strong>
+
+          <small id="weight-date">
+            Dernière mesure
+          </small>
+
+        </article>
+
+
+        <article
+          class="card clickable"
+          data-page="health"
+        >
+
+          <div class="icon">💉</div>
+
+          <span>Vaccins</span>
+
+          <strong id="vaccines">
+            --
+          </strong>
+
+          <small id="next-vaccine">
+            Aucun renseigné
+          </small>
+
+        </article>
+
+      </section>
+
+
+      <h3>Appareils</h3>
+
+      <section class="devices">
+
+        <article class="device">
+
+          <div class="device-icon">
+            🍗
+          </div>
+
+          <div class="device-main">
+
+            <strong>
+              Machine Croquette
+            </strong>
+
+            <small id="feeder-status">
+              Chargement...
+            </small>
+
+            <small
+              id="feeder-extra"
+              class="device-extra"
+            ></small>
+
+          </div>
+
+          <span
+            id="feeder-dot"
+            class="dot unknown"
+          ></span>
+
+        </article>
+
+
+        <article class="device">
+
+          <div class="device-icon">
+            💦
+          </div>
+
+          <div class="device-main">
+
+            <strong>
+              Fontaine kiki
+            </strong>
+
+            <small id="fountain-status">
+              Chargement...
+            </small>
+
+            <small
+              id="fountain-extra"
+              class="device-extra"
+            ></small>
+
+          </div>
+
+          <span
+            id="fountain-dot"
+            class="dot unknown"
+          ></span>
+
+        </article>
+
+      </section>
+
+
+      <h3>À surveiller</h3>
+
+      <section class="attention-card">
+
+        <div id="maintenance-list">
+          Chargement...
+        </div>
+
+      </section>
+
+    </section>
+
+
+    <!-- ================================================== -->
+    <!-- HISTORIQUE -->
+    <!-- ================================================== -->
+
+    <section
+      id="page-history"
+      class="page hidden"
+    >
+
+      <div class="page-title">
+
+        <h2>Historique 📊</h2>
+
+        <p>
+          Les 7 derniers jours
+        </p>
+
       </div>
-    </section>
 
 
-    <h3>Aujourd'hui</h3>
+      <article class="history-card">
 
-    <section class="grid">
+        <div class="history-header">
 
-      <article class="card">
-        <div class="icon">🍗</div>
-        <span>Nourriture</span>
-        <strong id="food">-- g</strong>
-        <small id="meals">-- repas</small>
-      </article>
+          <div>
+            <span>Croquettes</span>
+            <strong id="history-food-total">
+              -- g
+            </strong>
+          </div>
 
-      <article class="card">
-        <div class="icon">💧</div>
-        <span>Eau</span>
-        <strong id="water">-- ml</strong>
-        <small id="drinks">-- passages</small>
-      </article>
+          <div class="history-emoji">
+            🍗
+          </div>
 
-      <article class="card">
-        <div class="icon">⚖️</div>
-        <span>Poids</span>
-        <strong id="weight">-- kg</strong>
-        <small>Dernière mesure</small>
-      </article>
-
-      <article class="card">
-        <div class="icon">💉</div>
-        <span>Vaccins</span>
-        <strong id="vaccines">--</strong>
-        <small>À jour</small>
-      </article>
-
-    </section>
-
-
-    <h3>Appareils</h3>
-
-    <section class="devices">
-
-      <article class="device">
-        <div class="device-icon">🍗</div>
-
-        <div>
-          <strong>Machine Croquette</strong>
-          <small id="feeder-status">Chargement...</small>
         </div>
 
-        <span class="dot"></span>
+        <div id="food-chart" class="bars"></div>
+
       </article>
 
 
-      <article class="device">
-        <div class="device-icon">💦</div>
+      <article class="history-card">
 
-        <div>
-          <strong>Fontaine kiki</strong>
-          <small id="fountain-status">Chargement...</small>
+        <div class="history-header">
+
+          <div>
+            <span>Eau</span>
+            <strong id="history-water-total">
+              -- ml
+            </strong>
+          </div>
+
+          <div class="history-emoji">
+            💧
+          </div>
+
         </div>
 
-        <span class="dot"></span>
+        <div id="water-chart" class="bars"></div>
+
+      </article>
+
+
+      <h3>Dernières distributions</h3>
+
+      <section
+        id="feeding-history"
+        class="timeline"
+      ></section>
+
+    </section>
+
+
+    <!-- ================================================== -->
+    <!-- SANTE -->
+    <!-- ================================================== -->
+
+    <section
+      id="page-health"
+      class="page hidden"
+    >
+
+      <div class="page-title">
+
+        <h2>Santé ❤️</h2>
+
+        <p>
+          Suivi personnel de Keira
+        </p>
+
+      </div>
+
+
+      <!-- POIDS -->
+
+      <article class="health-card">
+
+        <div class="health-card-title">
+
+          <div>
+            <span class="big-emoji">
+              ⚖️
+            </span>
+
+            <div>
+              <strong>Poids</strong>
+              <small id="health-current-weight">
+                Aucune mesure
+              </small>
+            </div>
+          </div>
+
+          <button
+            class="mini-button"
+            data-modal="weight-modal"
+          >
+            + Ajouter
+          </button>
+
+        </div>
+
+        <div
+          id="weight-history"
+          class="health-list"
+        ></div>
+
+      </article>
+
+
+      <!-- VACCINS -->
+
+      <article class="health-card">
+
+        <div class="health-card-title">
+
+          <div>
+            <span class="big-emoji">
+              💉
+            </span>
+
+            <div>
+              <strong>Vaccins</strong>
+              <small>
+                Rappels et historique
+              </small>
+            </div>
+          </div>
+
+          <button
+            class="mini-button"
+            data-modal="vaccine-modal"
+          >
+            + Ajouter
+          </button>
+
+        </div>
+
+        <div
+          id="vaccination-list"
+          class="health-list"
+        ></div>
+
+      </article>
+
+
+      <!-- TRAITEMENTS -->
+
+      <article class="health-card">
+
+        <div class="health-card-title">
+
+          <div>
+            <span class="big-emoji">
+              💊
+            </span>
+
+            <div>
+              <strong>Traitements</strong>
+              <small>
+                Vermifuge, antiparasitaire…
+              </small>
+            </div>
+          </div>
+
+          <button
+            class="mini-button"
+            data-modal="treatment-modal"
+          >
+            + Ajouter
+          </button>
+
+        </div>
+
+        <div
+          id="treatment-list"
+          class="health-list"
+        ></div>
+
       </article>
 
     </section>
 
+
+    <!-- ================================================== -->
+    <!-- NAV -->
+    <!-- ================================================== -->
 
     <nav>
-      <button class="active">
+
+      <button
+        class="nav-button active"
+        data-page="home"
+      >
         <span>🏠</span>
         Accueil
       </button>
 
-      <button>
+      <button
+        class="nav-button"
+        data-page="history"
+      >
         <span>📊</span>
         Historique
       </button>
 
-      <button>
+      <button
+        class="nav-button"
+        data-page="health"
+      >
         <span>❤️</span>
         Santé
       </button>
@@ -162,9 +488,176 @@
         <span>🚪</span>
         Déconnexion
       </button>
+
     </nav>
 
   </main>
+
+
+  <!-- ================================================== -->
+  <!-- MODAL POIDS -->
+  <!-- ================================================== -->
+
+  <div id="weight-modal" class="modal hidden">
+
+    <div class="modal-content">
+
+      <h2>⚖️ Ajouter un poids</h2>
+
+      <label>
+        Poids en kg
+      </label>
+
+      <input
+        id="weight-input"
+        type="number"
+        step="0.01"
+        placeholder="Ex : 4.25"
+      >
+
+      <label>
+        Note
+      </label>
+
+      <input
+        id="weight-note"
+        type="text"
+        placeholder="Optionnel"
+      >
+
+      <button
+        id="save-weight"
+        class="primary-button"
+      >
+        Enregistrer
+      </button>
+
+      <button class="cancel-button">
+        Annuler
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================================================== -->
+  <!-- MODAL VACCIN -->
+  <!-- ================================================== -->
+
+  <div id="vaccine-modal" class="modal hidden">
+
+    <div class="modal-content">
+
+      <h2>💉 Ajouter un vaccin</h2>
+
+      <label>Vaccin</label>
+
+      <input
+        id="vaccine-name"
+        type="text"
+        placeholder="Ex : Typhus / Coryza"
+      >
+
+      <label>Date du vaccin</label>
+
+      <input
+        id="vaccine-date"
+        type="date"
+      >
+
+      <label>Prochain rappel</label>
+
+      <input
+        id="vaccine-next"
+        type="date"
+      >
+
+      <button
+        id="save-vaccine"
+        class="primary-button"
+      >
+        Enregistrer
+      </button>
+
+      <button class="cancel-button">
+        Annuler
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================================================== -->
+  <!-- MODAL TRAITEMENT -->
+  <!-- ================================================== -->
+
+  <div id="treatment-modal" class="modal hidden">
+
+    <div class="modal-content">
+
+      <h2>💊 Ajouter un traitement</h2>
+
+      <label>Type</label>
+
+      <select id="treatment-type">
+
+        <option value="Vermifuge">
+          Vermifuge
+        </option>
+
+        <option value="Antiparasitaire">
+          Antiparasitaire
+        </option>
+
+        <option value="Médicament">
+          Médicament
+        </option>
+
+        <option value="Autre">
+          Autre
+        </option>
+
+      </select>
+
+      <label>Produit</label>
+
+      <input
+        id="treatment-product"
+        type="text"
+        placeholder="Nom du produit"
+      >
+
+      <label>Date</label>
+
+      <input
+        id="treatment-date"
+        type="date"
+      >
+
+      <label>Prochaine échéance</label>
+
+      <input
+        id="treatment-next"
+        type="date"
+      >
+
+      <button
+        id="save-treatment"
+        class="primary-button"
+      >
+        Enregistrer
+      </button>
+
+      <button class="cancel-button">
+        Annuler
+      </button>
+
+    </div>
+
+  </div>
+
 
   <script src="app.js"></script>
 
