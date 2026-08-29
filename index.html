@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f6f6f4">
+
+  <title>Keira 🐱</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <main class="app">
+
+    <header>
+      <div>
+        <p class="hello">Bonjour 👋</p>
+        <h1>Keira 🐱</h1>
+      </div>
+
+      <div class="status online">
+        ● En ligne
+      </div>
+    </header>
+
+
+    <section class="hero">
+      <div>
+        <span class="label">Aujourd'hui</span>
+        <h2>Tout va bien 💚</h2>
+        <p>Dernière mise à jour : <span id="updated">--</span></p>
+      </div>
+    </section>
+
+
+    <h3>Aujourd'hui</h3>
+
+    <section class="grid">
+
+      <article class="card">
+        <div class="icon">🍗</div>
+        <span>Nourriture</span>
+        <strong id="food">-- g</strong>
+        <small id="meals">-- repas</small>
+      </article>
+
+      <article class="card">
+        <div class="icon">💧</div>
+        <span>Eau</span>
+        <strong id="water">-- ml</strong>
+        <small id="drinks">-- passages</small>
+      </article>
+
+      <article class="card">
+        <div class="icon">⚖️</div>
+        <span>Poids</span>
+        <strong id="weight">-- kg</strong>
+        <small>Dernière mesure</small>
+      </article>
+
+      <article class="card">
+        <div class="icon">💉</div>
+        <span>Vaccins</span>
+        <strong id="vaccines">--</strong>
+        <small>À jour</small>
+      </article>
+
+    </section>
+
+
+    <h3>Appareils</h3>
+
+    <section class="devices">
+
+      <article class="device">
+        <div class="device-icon">🍗</div>
+
+        <div>
+          <strong>Machine Croquette</strong>
+          <small id="feeder-status">Chargement...</small>
+        </div>
+
+        <span class="dot"></span>
+      </article>
+
+
+      <article class="device">
+        <div class="device-icon">💦</div>
+
+        <div>
+          <strong>Fontaine kiki</strong>
+          <small id="fountain-status">Chargement...</small>
+        </div>
+
+        <span class="dot"></span>
+      </article>
+
+    </section>
+
+
+    <nav>
+      <button class="active">
+        <span>🏠</span>
+        Accueil
+      </button>
+
+      <button>
+        <span>📊</span>
+        Historique
+      </button>
+
+      <button>
+        <span>❤️</span>
+        Santé
+      </button>
+
+      <button>
+        <span>⚙️</span>
+        Réglages
+      </button>
+    </nav>
+
+  </main>
+
+  <script src="app.js"></script>
+
+</body>
+</html>
