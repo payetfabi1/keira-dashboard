@@ -8,11 +8,53 @@
   <title>Keira 🐱</title>
 
   <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-  <main class="app">
+  <section id="login-screen" style="display:none; padding:40px 20px;">
+    <div style="max-width:500px; margin:auto;">
+      <h1>Keira 🐱</h1>
+      <p>Connecte-toi pour accéder au dashboard.</p>
+
+      <input
+        id="login-email"
+        type="email"
+        placeholder="Ton adresse e-mail"
+        style="
+          width:100%;
+          padding:16px;
+          border-radius:16px;
+          border:1px solid #ddd;
+          font-size:16px;
+          margin:20px 0 10px;
+        "
+      >
+
+      <button
+        id="login-button"
+        style="
+          width:100%;
+          padding:16px;
+          border:0;
+          border-radius:16px;
+          background:#111;
+          color:white;
+          font-size:16px;
+          font-weight:600;
+        "
+      >
+        M'envoyer le lien de connexion
+      </button>
+
+      <p id="login-message" style="color:#777; margin-top:15px;"></p>
+    </div>
+  </section>
+
+
+  <main class="app" id="dashboard" style="display:none;">
 
     <header>
       <div>
@@ -29,7 +71,7 @@
     <section class="hero">
       <div>
         <span class="label">Aujourd'hui</span>
-        <h2>Tout va bien 💚</h2>
+        <h2>Chargement...</h2>
         <p>Dernière mise à jour : <span id="updated">--</span></p>
       </div>
     </section>
@@ -116,9 +158,9 @@
         Santé
       </button>
 
-      <button>
-        <span>⚙️</span>
-        Réglages
+      <button id="logout-button">
+        <span>🚪</span>
+        Déconnexion
       </button>
     </nav>
 
