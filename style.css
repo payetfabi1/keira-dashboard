@@ -1045,3 +1045,124 @@ nav button.active {
   font-size: 16px;
   font-weight: 700;
 }
+
+/* =========================================================
+   HEALTH DUE STATUS
+========================================================= */
+
+.health-due-card {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+
+  margin: 10px 0;
+  padding: 15px;
+
+  border-radius: 18px;
+
+  background:
+    #f5f5f5;
+}
+
+
+.health-due-icon {
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+
+.health-due-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+
+.health-due-main strong {
+  font-size: 16px;
+}
+
+
+.health-due-main span {
+  font-weight: 700;
+}
+
+
+.health-due-main small {
+  color: #888;
+}
+
+
+.health-due-ok {
+  background:
+    rgba(
+      52,
+      199,
+      89,
+      0.10
+    );
+}
+
+
+.health-due-soon {
+  background:
+    rgba(
+      255,
+      159,
+      10,
+      0.12
+    );
+}
+
+
+.health-due-late {
+  background:
+    rgba(
+      255,
+      59,
+      48,
+      0.10
+    );
+}
+
+
+.health-due-neutral {
+  background:
+    rgba(
+      142,
+      142,
+      147,
+      0.10
+    );
+}
+
+
+.health-history-title {
+  margin:
+    22px 0 8px;
+
+  font-size:
+    13px;
+
+  font-weight:
+    700;
+
+  color:
+    #8e8e93;
+
+  text-transform:
+    uppercase;
+
+  letter-spacing:
+    0.04em;
+}
+
+
+.health-row-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+
+  text-align: right;
+}
