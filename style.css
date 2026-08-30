@@ -1506,3 +1506,61 @@ nav button.active {
       auto;
   }
 }
+
+/* =========================================================
+   HEALTH HISTORY COLLAPSE
+========================================================= */
+
+.history-row-hidden {
+  display: none !important;
+}
+
+
+.history-toggle-button {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  margin-top: 10px;
+
+  padding: 11px 14px;
+
+  border: 0;
+
+  border-radius: 14px;
+
+  background: #f4f4f4;
+
+  color: #555;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background .2s ease,
+    transform .15s ease;
+}
+
+
+.history-toggle-button:hover {
+  background: #ededed;
+}
+
+
+.history-toggle-button:active {
+  transform: scale(.98);
+}
+
+
+.history-toggle-chevron {
+  font-size: 14px;
+
+  color: #999;
+}
