@@ -1193,36 +1193,7 @@ async function loadHome() {
           )} ml restants`;
 
 
-  /* =======================================================
-   POIDS
-======================================================= */
 
-const {
-  data: weights,
-  error: weightsError
-} =
-  await supabaseClient
-    .from(
-      "weight_entries"
-    )
-    .select("*")
-    .order(
-      "measured_at",
-      {
-        ascending: true
-      }
-    );
-
-
-if (
-  weightsError
-) {
-
-  console.error(
-    "weight_entries:",
-    weightsError
-  );
-}
 
 
 /* =======================================================
@@ -1649,59 +1620,15 @@ if (
           Aucune mesure
         </div>
       `;
+
+  setupHistoryToggle(
+  weightHistory,
+  ".weight-history-row",
+  3
+);
+  
 }
 
-
-  /* =======================================================
-     VACCINS
-  ======================================================= */
-
-  const {
-    data: vaccines
-  } =
-    await supabaseClient
-      .from(
-        "vaccinations"
-      )
-      .select("*")
-      .order(
-        "next_due_date",
-        {
-          ascending: true
-        }
-      );
-
-
-  if (
-    vaccines?.length
-  ) {
-
-    document
-      .getElementById(
-        "vaccines"
-      )
-      .textContent =
-        vaccines.length;
-
-
-    const next =
-      vaccines.find(
-        vaccine =>
-          vaccine.next_due_date
-      );
-
-
-    document
-      .getElementById(
-        "next-vaccine"
-      )
-      .textContent =
-        next
-          ? `Rappel ${formatDate(
-              next.next_due_date
-            )}`
-          : "À jour";
-  }
 
   /* =======================================================
      SUIVI SANTÉ - ACCUEIL
@@ -2605,6 +2532,140 @@ function healthDueStatus(
   };
 }
 
+
+/* =========================================================
+   HISTORIQUE - VOIR PLUS / RÉDUIRE
+========================================================= */
+
+function setupHistoryToggle(
+  container,
+  rowSelector,
+  limit = 3
+) {
+
+  if (!container) {
+    return;
+  }
+
+
+  const rows =
+    Array.from(
+      container.querySelectorAll(
+        rowSelector
+      )
+    );
+
+
+  if (
+    rows.length <= limit
+  ) {
+    return;
+  }
+
+
+  rows.forEach(
+    (
+      row,
+      index
+    ) => {
+
+      if (
+        index >= limit
+      ) {
+
+        row.classList.add(
+          "history-row-hidden"
+        );
+      }
+    }
+  );
+
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+
+  button.className =
+    "history-toggle-button";
+
+
+  button.innerHTML =
+    `
+      <span>
+        Voir tout
+      </span>
+
+      <span class="history-toggle-chevron">
+        ↓
+      </span>
+    `;
+
+
+  let expanded =
+    false;
+
+
+  button.addEventListener(
+    "click",
+    () => {
+
+      expanded =
+        !expanded;
+
+
+      rows.forEach(
+        (
+          row,
+          index
+        ) => {
+
+          if (
+            index < limit
+          ) {
+            return;
+          }
+
+
+          row.classList.toggle(
+            "history-row-hidden",
+            !expanded
+          );
+        }
+      );
+
+
+      button.innerHTML =
+        expanded
+
+          ? `
+              <span>
+                Réduire
+              </span>
+
+              <span class="history-toggle-chevron">
+                ↑
+              </span>
+            `
+
+          : `
+              <span>
+                Voir tout
+              </span>
+
+              <span class="history-toggle-chevron">
+                ↓
+              </span>
+            `;
+    }
+  );
+
+
+  container.appendChild(
+    button
+  );
+}
 
 async function loadHealth() {
 
