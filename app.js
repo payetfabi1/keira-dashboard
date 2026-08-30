@@ -527,20 +527,28 @@ function setDevice(
       `${prefix}-status`
     );
 
-
-  const dot =
+  const wifi =
     document.getElementById(
-      `${prefix}-dot`
+      `${prefix}-wifi`
+    );
+
+  const extra =
+    document.getElementById(
+      `${prefix}-extra`
     );
 
 
   if (!device) {
 
-    status.textContent =
-      "Données indisponibles";
+    if (status) {
+      status.textContent =
+        "Données indisponibles";
+    }
 
-    dot.className =
-      "device-state-dot";
+    if (wifi) {
+      wifi.className =
+        "wifi offline";
+    }
 
     return;
   }
@@ -548,72 +556,73 @@ function setDevice(
 
   if (!device.online) {
 
-    status.textContent =
-      "Hors ligne";
+    if (status) {
+      status.textContent =
+        "Hors ligne";
+    }
 
-    dot.className =
-      "device-state-dot offline";
+    if (wifi) {
+      wifi.className =
+        "wifi offline";
+    }
 
     return;
   }
 
 
-  status.textContent =
-    "En ligne";
+  if (status) {
+    status.textContent =
+      "En ligne";
+  }
 
 
-  dot.className =
-    "device-state-dot online";
+  /*
+   * Compatibilité avec l'ancien affichage Wi-Fi.
+   * Si l'élément n'existe plus dans le HTML,
+   * on ne fait simplement rien.
+   */
+  if (wifi) {
+
+    wifi.className =
+      "wifi "
+      + wifiClass(
+        device.wifi_rssi,
+        device.online
+      );
+
+    wifi.title =
+      wifiLabel(
+        device.wifi_rssi
+      );
+  }
 
 
   if (
     prefix === "feeder"
+    &&
+    extra
   ) {
 
-    document
-      .getElementById(
-        "feeder-extra"
-      )
-      .textContent =
-        device.food_available
-          ? "Croquettes disponibles"
-          : "⚠️ Croquettes faibles";
+    extra.textContent =
+      device.food_available
+        ? "Croquettes disponibles"
+        : "⚠️ Croquettes faibles";
   }
 
 
   if (
     prefix === "fountain"
+    &&
+    extra
   ) {
 
-    let waterPercent =
+    const waterPercent =
       device.water_percent;
 
-
-    if (
+    extra.textContent =
       waterPercent != null
-    ) {
-
-      waterPercent =
-        Math.min(
-          100,
-          Math.max(
-            0,
-            Number(
-              waterPercent
-            )
-          )
-        );
-    }
-
-
-    document
-      .getElementById(
-        "fountain-extra"
-      )
-      .textContent =
-        waterPercent != null
-          ? `Niveau d'eau : ${waterPercent}%`
-          : "Fontaine opérationnelle";
+        ? `Niveau d'eau : ${waterPercent}%`
+        : "Fontaine opérationnelle";
   }
 }
 
