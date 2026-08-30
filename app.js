@@ -1890,9 +1890,116 @@ async function loadHistory() {
    HEALTH
 ========================================================= */
 
+function healthDueStatus(
+  dateValue
+) {
+
+  if (!dateValue) {
+
+    return {
+      icon: "⚪",
+      label: "Échéance à définir",
+      className: "health-due-neutral",
+      days: null,
+    };
+  }
+
+
+  const today =
+    new Date(
+      `${parisDay()}T12:00:00`
+    );
+
+
+  const dueDate =
+    new Date(
+      `${dateValue}T12:00:00`
+    );
+
+
+  const diffDays =
+    Math.ceil(
+      (
+        dueDate.getTime()
+        - today.getTime()
+      )
+      / 86400000
+    );
+
+
+  if (
+    diffDays < 0
+  ) {
+
+    return {
+      icon: "🔴",
+      label:
+        `En retard de ${Math.abs(diffDays)} jour${
+          Math.abs(diffDays) === 1
+            ? ""
+            : "s"
+        }`,
+      className:
+        "health-due-late",
+      days:
+        diffDays,
+    };
+  }
+
+
+  if (
+    diffDays === 0
+  ) {
+
+    return {
+      icon: "🔴",
+      label:
+        "À faire aujourd'hui",
+      className:
+        "health-due-late",
+      days:
+        0,
+    };
+  }
+
+
+  if (
+    diffDays <= 30
+  ) {
+
+    return {
+      icon: "🟠",
+      label:
+        `Dans ${diffDays} jour${
+          diffDays === 1
+            ? ""
+            : "s"
+        }`,
+      className:
+        "health-due-soon",
+      days:
+        diffDays,
+    };
+  }
+
+
+  return {
+    icon: "🟢",
+    label:
+      `Dans ${diffDays} jours`,
+    className:
+      "health-due-ok",
+    days:
+      diffDays,
+  };
+}
+
+
 async function loadHealth() {
 
-  /* POIDS */
+  /* =======================================================
+     POIDS
+  ======================================================= */
 
   const {
     data: weights
@@ -1905,7 +2012,8 @@ async function loadHealth() {
       .order(
         "measured_at",
         {
-          ascending: false
+          ascending:
+            false
         }
       );
 
@@ -1961,10 +2069,13 @@ async function loadHealth() {
         `;
 
 
-  /* VACCINS */
+  /* =======================================================
+     VACCINS
+  ======================================================= */
 
   const {
-    data: vaccines
+    data: vaccines,
+    error: vaccinesError
   } =
     await supabaseClient
       .from(
@@ -1974,9 +2085,32 @@ async function loadHealth() {
       .order(
         "vaccination_date",
         {
-          ascending: false
+          ascending:
+            false
         }
       );
+
+
+  if (
+    vaccinesError
+  ) {
+
+    console.error(
+      "vaccinations:",
+      vaccinesError
+    );
+  }
+
+
+  const latestVaccine =
+    vaccines?.[0];
+
+
+  const vaccineStatus =
+    healthDueStatus(
+      latestVaccine
+        ?.next_due_date
+    );
 
 
   document
@@ -1986,47 +2120,116 @@ async function loadHealth() {
     .innerHTML =
       vaccines?.length
 
-        ? vaccines
-          .map(
-            vaccine => {
+        ? `
 
-              return `
-                <div class="health-row">
+          <div
+            class="health-due-card ${vaccineStatus.className}"
+          >
 
-                  <div>
+            <div class="health-due-icon">
+              ${vaccineStatus.icon}
+            </div>
 
-                    <strong>
-                      ${vaccine.vaccine_name}
-                    </strong>
+            <div class="health-due-main">
 
+              <strong>
+                Vaccins
+              </strong>
+
+              <span>
+                ${vaccineStatus.label}
+              </span>
+
+              ${
+                latestVaccine
+                  ?.next_due_date
+
+                  ? `
                     <small>
+                      Prochain rappel :
                       ${formatDate(
-                        vaccine.vaccination_date
+                        latestVaccine.next_due_date
                       )}
                     </small>
+                  `
 
-                  </div>
+                  : `
+                    <small>
+                      Aucun prochain rappel renseigné
+                    </small>
+                  `
+              }
+
+            </div>
+
+          </div>
 
 
-                  <small>
+          <div class="health-history-title">
+            Historique
+          </div>
 
-                    ${
+
+          ${
+            vaccines
+              .map(
+                vaccine => {
+
+                  const status =
+                    healthDueStatus(
                       vaccine.next_due_date
+                    );
 
-                        ? `Rappel ${formatDate(
-                            vaccine.next_due_date
-                          )}`
 
-                        : ""
-                    }
+                  return `
+                    <div class="health-row">
 
-                  </small>
+                      <div>
 
-                </div>
-              `;
-            }
-          )
-          .join("")
+                        <strong>
+                          💉 ${vaccine.vaccine_name}
+                        </strong>
+
+                        <small>
+                          Vacciné le
+                          ${formatDate(
+                            vaccine.vaccination_date
+                          )}
+                        </small>
+
+                      </div>
+
+
+                      <div class="health-row-right">
+
+                        ${
+                          vaccine.next_due_date
+
+                            ? `
+                              <small>
+                                Rappel
+                                ${formatDate(
+                                  vaccine.next_due_date
+                                )}
+                              </small>
+                            `
+
+                            : `
+                              <small>
+                                Pas de rappel renseigné
+                              </small>
+                            `
+                        }
+
+                      </div>
+
+                    </div>
+                  `;
+                }
+              )
+              .join("")
+          }
+        `
 
         : `
           <div class="health-row">
@@ -2035,10 +2238,13 @@ async function loadHealth() {
         `;
 
 
-  /* TRAITEMENTS */
+  /* =======================================================
+     TRAITEMENTS
+  ======================================================= */
 
   const {
-    data: treatments
+    data: treatments,
+    error: treatmentsError
   } =
     await supabaseClient
       .from(
@@ -2048,9 +2254,55 @@ async function loadHealth() {
       .order(
         "administered_at",
         {
-          ascending: false
+          ascending:
+            false
         }
       );
+
+
+  if (
+    treatmentsError
+  ) {
+
+    console.error(
+      "treatments:",
+      treatmentsError
+    );
+  }
+
+
+  const latestDewormer =
+    treatments
+      ?.find(
+        treatment =>
+          treatment
+            .treatment_type
+          === "Vermifuge"
+      );
+
+
+  const latestAntiparasitic =
+    treatments
+      ?.find(
+        treatment =>
+          treatment
+            .treatment_type
+          === "Antiparasitaire"
+      );
+
+
+  const dewormerStatus =
+    healthDueStatus(
+      latestDewormer
+        ?.next_due_date
+    );
+
+
+  const antiparasiticStatus =
+    healthDueStatus(
+      latestAntiparasitic
+        ?.next_due_date
+    );
 
 
   document
@@ -2058,47 +2310,212 @@ async function loadHealth() {
       "treatment-list"
     )
     .innerHTML =
-      treatments?.length
+      `
 
-        ? treatments
-          .map(
-            treatment => {
+        <!-- VERMIFUGE -->
 
-              return `
-                <div class="health-row">
+        <div
+          class="health-due-card ${dewormerStatus.className}"
+        >
 
-                  <div>
-
-                    <strong>
-                      ${treatment.treatment_type}
-                    </strong>
-
-                    <small>
-                      ${treatment.product_name || ""}
-                    </small>
-
-                  </div>
-
-
-                  <small>
-
-                    ${formatDate(
-                      treatment.administered_at
-                    )}
-
-                  </small>
-
-                </div>
-              `;
-            }
-          )
-          .join("")
-
-        : `
-          <div class="health-row">
-            Aucun traitement
+          <div class="health-due-icon">
+            ${dewormerStatus.icon}
           </div>
-        `;
+
+          <div class="health-due-main">
+
+            <strong>
+              💊 Vermifuge
+            </strong>
+
+            <span>
+              ${dewormerStatus.label}
+            </span>
+
+            ${
+              latestDewormer
+
+                ? `
+                  <small>
+                    Dernier :
+                    ${
+                      latestDewormer
+                        .product_name
+                        || "Vermifuge"
+                    }
+                    ·
+                    ${formatDate(
+                      latestDewormer
+                        .administered_at
+                    )}
+                  </small>
+                `
+
+                : `
+                  <small>
+                    Aucun vermifuge enregistré
+                  </small>
+                `
+            }
+
+
+            ${
+              latestDewormer
+                ?.next_due_date
+
+                ? `
+                  <small>
+                    Prochaine échéance :
+                    ${formatDate(
+                      latestDewormer
+                        .next_due_date
+                    )}
+                  </small>
+                `
+
+                : ""
+            }
+
+          </div>
+
+        </div>
+
+
+        <!-- ANTIPARASITAIRE -->
+
+        <div
+          class="health-due-card ${antiparasiticStatus.className}"
+        >
+
+          <div class="health-due-icon">
+            ${antiparasiticStatus.icon}
+          </div>
+
+          <div class="health-due-main">
+
+            <strong>
+              🦟 Antiparasitaire
+            </strong>
+
+            <span>
+              ${antiparasiticStatus.label}
+            </span>
+
+            ${
+              latestAntiparasitic
+
+                ? `
+                  <small>
+                    Dernier :
+                    ${
+                      latestAntiparasitic
+                        .product_name
+                        || "Antiparasitaire"
+                    }
+                    ·
+                    ${formatDate(
+                      latestAntiparasitic
+                        .administered_at
+                    )}
+                  </small>
+                `
+
+                : `
+                  <small>
+                    Aucun antiparasitaire enregistré
+                  </small>
+                `
+            }
+
+          </div>
+
+        </div>
+
+
+        <div class="health-history-title">
+          Historique
+        </div>
+
+
+        ${
+          treatments?.length
+
+            ? treatments
+              .map(
+                treatment => {
+
+                  return `
+                    <div class="health-row">
+
+                      <div>
+
+                        <strong>
+                          ${
+                            treatment
+                              .treatment_type
+                            === "Vermifuge"
+                              ? "💊"
+                              : treatment
+                                  .treatment_type
+                                === "Antiparasitaire"
+                              ? "🦟"
+                              : "💉"
+                          }
+
+                          ${treatment.treatment_type}
+                        </strong>
+
+                        <small>
+                          ${
+                            treatment.product_name
+                            || ""
+                          }
+                        </small>
+
+                      </div>
+
+
+                      <div class="health-row-right">
+
+                        <strong>
+                          ${formatDate(
+                            treatment
+                              .administered_at
+                          )}
+                        </strong>
+
+                        ${
+                          treatment
+                            .next_due_date
+
+                            ? `
+                              <small>
+                                Échéance
+                                ${formatDate(
+                                  treatment
+                                    .next_due_date
+                                )}
+                              </small>
+                            `
+
+                            : ""
+                        }
+
+                      </div>
+
+                    </div>
+                  `;
+                }
+              )
+              .join("")
+
+            : `
+              <div class="health-row">
+                Aucun traitement
+              </div>
+            `
+        }
+      `;
 }
 
 
