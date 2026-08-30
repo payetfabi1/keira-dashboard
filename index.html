@@ -19,8 +19,12 @@
 
 <body>
 
+  <!-- ===================================================== -->
   <!-- LOGIN -->
+  <!-- ===================================================== -->
+
   <section id="login-screen" class="login-screen hidden">
+
     <div class="login-card">
 
       <div class="login-cat">🐱</div>
@@ -28,7 +32,7 @@
       <h1>Keira</h1>
 
       <p>
-        Connecte-toi pour accéder au dashboard.
+        Connecte-toi une fois sur cet appareil.
       </p>
 
       <input
@@ -38,18 +42,83 @@
         autocomplete="email"
       >
 
-      <button id="login-button" class="primary-button">
-        Recevoir mon lien de connexion
+      <input
+        id="login-password"
+        type="password"
+        placeholder="Mot de passe"
+        autocomplete="current-password"
+      >
+
+      <button
+        id="login-button"
+        class="primary-button"
+      >
+        Se connecter
       </button>
 
-      <p id="login-message" class="muted"></p>
+      <button
+        id="forgot-password"
+        class="link-button"
+      >
+        Définir / réinitialiser mon mot de passe
+      </button>
+
+      <p
+        id="login-message"
+        class="muted"
+      ></p>
 
     </div>
+
   </section>
 
 
-  <!-- APPLICATION -->
-  <main id="dashboard" class="app hidden">
+  <!-- ===================================================== -->
+  <!-- RESET PASSWORD -->
+  <!-- ===================================================== -->
+
+  <section
+    id="password-screen"
+    class="login-screen hidden"
+  >
+
+    <div class="login-card">
+
+      <div class="login-cat">🔐</div>
+
+      <h1>Nouveau mot de passe</h1>
+
+      <input
+        id="new-password"
+        type="password"
+        placeholder="Nouveau mot de passe"
+      >
+
+      <button
+        id="save-password"
+        class="primary-button"
+      >
+        Enregistrer
+      </button>
+
+      <p
+        id="password-message"
+        class="muted"
+      ></p>
+
+    </div>
+
+  </section>
+
+
+  <!-- ===================================================== -->
+  <!-- APP -->
+  <!-- ===================================================== -->
+
+  <main
+    id="dashboard"
+    class="app hidden"
+  >
 
     <header class="topbar">
 
@@ -58,18 +127,24 @@
         <h1>Keira 🐱</h1>
       </div>
 
-      <div id="global-status" class="status">
+      <div
+        id="global-status"
+        class="status"
+      >
         ● Chargement
       </div>
 
     </header>
 
 
-    <!-- ================================================== -->
-    <!-- ACCUEIL -->
-    <!-- ================================================== -->
+    <!-- =================================================== -->
+    <!-- HOME -->
+    <!-- =================================================== -->
 
-    <section id="page-home" class="page">
+    <section
+      id="page-home"
+      class="page"
+    >
 
       <section class="hero">
 
@@ -82,50 +157,117 @@
         </h2>
 
         <p>
-          Dernière mise à jour :
+          Dernière actualisation :
           <span id="updated">--</span>
         </p>
 
       </section>
 
 
-      <h3>Aujourd'hui</h3>
-
-      <section class="grid">
-
-        <article class="card">
-
-          <div class="icon">🍗</div>
-
-          <span>Nourriture</span>
-
-          <strong id="food">
-            -- g
-          </strong>
-
-          <small id="meals">
-            -- distributions
-          </small>
-
-        </article>
+      <h3>Objectifs du jour</h3>
 
 
-        <article class="card">
+      <!-- FOOD GOAL -->
 
-          <div class="icon">💧</div>
+      <article class="goal-card">
 
-          <span>Eau</span>
+        <div class="goal-header">
 
-          <strong id="water">
-            -- ml
-          </strong>
+          <div>
+            <span class="goal-icon">🍗</span>
 
-          <small id="drinks">
-            -- passages
-          </small>
+            <div>
+              <small>Nourriture</small>
 
-        </article>
+              <strong>
+                <span id="food-current">--</span>
+                <span class="goal-total">/ 30 g</span>
+              </strong>
+            </div>
+          </div>
 
+          <div
+            id="food-percent"
+            class="goal-percent"
+          >
+            -- %
+          </div>
+
+        </div>
+
+        <div class="progress-track">
+          <div
+            id="food-progress"
+            class="progress-fill"
+          ></div>
+        </div>
+
+        <div class="goal-footer">
+
+          <span id="food-doses">
+            -- / 3 doses
+          </span>
+
+          <span id="food-goal-state">
+            Chargement...
+          </span>
+
+        </div>
+
+      </article>
+
+
+      <!-- WATER GOAL -->
+
+      <article class="goal-card">
+
+        <div class="goal-header">
+
+          <div>
+            <span class="goal-icon">💧</span>
+
+            <div>
+              <small>Hydratation</small>
+
+              <strong>
+                <span id="water-current">--</span>
+                <span class="goal-total">/ 100 ml</span>
+              </strong>
+            </div>
+          </div>
+
+          <div
+            id="water-percent"
+            class="goal-percent"
+          >
+            -- %
+          </div>
+
+        </div>
+
+        <div class="progress-track">
+          <div
+            id="water-progress"
+            class="progress-fill water-progress"
+          ></div>
+        </div>
+
+        <div class="goal-footer">
+
+          <span id="water-visits">
+            -- prises
+          </span>
+
+          <span id="water-goal-state">
+            Chargement...
+          </span>
+
+        </div>
+
+      </article>
+
+
+      <section class="grid health-grid">
 
         <article
           class="card clickable"
@@ -137,7 +279,7 @@
           <span>Poids</span>
 
           <strong id="weight">
-            --
+            À renseigner
           </strong>
 
           <small id="weight-date">
@@ -157,7 +299,7 @@
           <span>Vaccins</span>
 
           <strong id="vaccines">
-            --
+            À renseigner
           </strong>
 
           <small id="next-vaccine">
@@ -168,6 +310,8 @@
 
       </section>
 
+
+      <!-- DEVICES -->
 
       <h3>Appareils</h3>
 
@@ -196,10 +340,12 @@
 
           </div>
 
-          <span
-            id="feeder-dot"
-            class="dot unknown"
-          ></span>
+          <div
+            id="feeder-wifi"
+            class="wifi"
+          >
+            ▂▄▆█
+          </div>
 
         </article>
 
@@ -227,32 +373,35 @@
 
           </div>
 
-          <span
-            id="fountain-dot"
-            class="dot unknown"
-          ></span>
+          <div
+            id="fountain-wifi"
+            class="wifi"
+          >
+            ▂▄▆█
+          </div>
 
         </article>
 
       </section>
 
 
-      <h3>À surveiller</h3>
+      <!-- MAINTENANCE -->
 
-      <section class="attention-card">
+      <h3>Entretien</h3>
 
-        <div id="maintenance-list">
-          Chargement...
-        </div>
-
+      <section
+        id="maintenance-list"
+        class="maintenance-card"
+      >
+        Chargement...
       </section>
 
     </section>
 
 
-    <!-- ================================================== -->
-    <!-- HISTORIQUE -->
-    <!-- ================================================== -->
+    <!-- =================================================== -->
+    <!-- HISTORY -->
+    <!-- =================================================== -->
 
     <section
       id="page-history"
@@ -269,64 +418,17 @@
 
       </div>
 
-
-      <article class="history-card">
-
-        <div class="history-header">
-
-          <div>
-            <span>Croquettes</span>
-            <strong id="history-food-total">
-              -- g
-            </strong>
-          </div>
-
-          <div class="history-emoji">
-            🍗
-          </div>
-
-        </div>
-
-        <div id="food-chart" class="bars"></div>
-
-      </article>
-
-
-      <article class="history-card">
-
-        <div class="history-header">
-
-          <div>
-            <span>Eau</span>
-            <strong id="history-water-total">
-              -- ml
-            </strong>
-          </div>
-
-          <div class="history-emoji">
-            💧
-          </div>
-
-        </div>
-
-        <div id="water-chart" class="bars"></div>
-
-      </article>
-
-
-      <h3>Dernières distributions</h3>
-
       <section
-        id="feeding-history"
-        class="timeline"
+        id="daily-history"
+        class="daily-history"
       ></section>
 
     </section>
 
 
-    <!-- ================================================== -->
-    <!-- SANTE -->
-    <!-- ================================================== -->
+    <!-- =================================================== -->
+    <!-- HEALTH -->
+    <!-- =================================================== -->
 
     <section
       id="page-health"
@@ -344,8 +446,6 @@
       </div>
 
 
-      <!-- POIDS -->
-
       <article class="health-card">
 
         <div class="health-card-title">
@@ -357,6 +457,7 @@
 
             <div>
               <strong>Poids</strong>
+
               <small id="health-current-weight">
                 Aucune mesure
               </small>
@@ -380,8 +481,6 @@
       </article>
 
 
-      <!-- VACCINS -->
-
       <article class="health-card">
 
         <div class="health-card-title">
@@ -393,6 +492,7 @@
 
             <div>
               <strong>Vaccins</strong>
+
               <small>
                 Rappels et historique
               </small>
@@ -416,8 +516,6 @@
       </article>
 
 
-      <!-- TRAITEMENTS -->
-
       <article class="health-card">
 
         <div class="health-card-title">
@@ -429,6 +527,7 @@
 
             <div>
               <strong>Traitements</strong>
+
               <small>
                 Vermifuge, antiparasitaire…
               </small>
@@ -454,9 +553,7 @@
     </section>
 
 
-    <!-- ================================================== -->
     <!-- NAV -->
-    <!-- ================================================== -->
 
     <nav>
 
@@ -494,19 +591,20 @@
   </main>
 
 
-  <!-- ================================================== -->
-  <!-- MODAL POIDS -->
-  <!-- ================================================== -->
+  <!-- ===================================================== -->
+  <!-- MODALS -->
+  <!-- ===================================================== -->
 
-  <div id="weight-modal" class="modal hidden">
+  <div
+    id="weight-modal"
+    class="modal hidden"
+  >
 
     <div class="modal-content">
 
       <h2>⚖️ Ajouter un poids</h2>
 
-      <label>
-        Poids en kg
-      </label>
+      <label>Poids en kg</label>
 
       <input
         id="weight-input"
@@ -515,9 +613,7 @@
         placeholder="Ex : 4.25"
       >
 
-      <label>
-        Note
-      </label>
+      <label>Note</label>
 
       <input
         id="weight-note"
@@ -541,11 +637,10 @@
   </div>
 
 
-  <!-- ================================================== -->
-  <!-- MODAL VACCIN -->
-  <!-- ================================================== -->
-
-  <div id="vaccine-modal" class="modal hidden">
+  <div
+    id="vaccine-modal"
+    class="modal hidden"
+  >
 
     <div class="modal-content">
 
@@ -556,10 +651,10 @@
       <input
         id="vaccine-name"
         type="text"
-        placeholder="Ex : Typhus / Coryza"
+        placeholder="Typhus / Coryza..."
       >
 
-      <label>Date du vaccin</label>
+      <label>Date</label>
 
       <input
         id="vaccine-date"
@@ -589,11 +684,10 @@
   </div>
 
 
-  <!-- ================================================== -->
-  <!-- MODAL TRAITEMENT -->
-  <!-- ================================================== -->
-
-  <div id="treatment-modal" class="modal hidden">
+  <div
+    id="treatment-modal"
+    class="modal hidden"
+  >
 
     <div class="modal-content">
 
@@ -602,23 +696,10 @@
       <label>Type</label>
 
       <select id="treatment-type">
-
-        <option value="Vermifuge">
-          Vermifuge
-        </option>
-
-        <option value="Antiparasitaire">
-          Antiparasitaire
-        </option>
-
-        <option value="Médicament">
-          Médicament
-        </option>
-
-        <option value="Autre">
-          Autre
-        </option>
-
+        <option>Vermifuge</option>
+        <option>Antiparasitaire</option>
+        <option>Médicament</option>
+        <option>Autre</option>
       </select>
 
       <label>Produit</label>
@@ -626,7 +707,6 @@
       <input
         id="treatment-product"
         type="text"
-        placeholder="Nom du produit"
       >
 
       <label>Date</label>
