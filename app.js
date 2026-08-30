@@ -2755,6 +2755,184 @@ document
     }
   );
 
+/* =========================================================
+   TREATMENT AUTO DUE DATE
+========================================================= */
+
+function calculateTreatmentDueDate() {
+
+  const treatmentType =
+    document
+      .getElementById(
+        "treatment-type"
+      )
+      .value;
+
+
+  const administeredAt =
+    document
+      .getElementById(
+        "treatment-date"
+      )
+      .value;
+
+
+  const nextInput =
+    document
+      .getElementById(
+        "treatment-next"
+      );
+
+
+  if (
+    !administeredAt
+    ||
+    !nextInput
+  ) {
+
+    return;
+  }
+
+
+  function addMonthsSafe(
+    dateString,
+    months
+  ) {
+
+    const [
+      year,
+      month,
+      day
+    ] =
+      dateString
+        .split("-")
+        .map(Number);
+
+
+    const targetMonthIndex =
+      (
+        month - 1
+        + months
+      );
+
+
+    const targetYear =
+      year
+      + Math.floor(
+        targetMonthIndex / 12
+      );
+
+
+    const targetMonth =
+      (
+        (
+          targetMonthIndex % 12
+        )
+        + 12
+      )
+      % 12;
+
+
+    const lastDayOfTargetMonth =
+      new Date(
+        targetYear,
+        targetMonth + 1,
+        0
+      )
+        .getDate();
+
+
+    const targetDay =
+      Math.min(
+        day,
+        lastDayOfTargetMonth
+      );
+
+
+    return [
+      targetYear,
+      String(
+        targetMonth + 1
+      )
+        .padStart(
+          2,
+          "0"
+        ),
+      String(
+        targetDay
+      )
+        .padStart(
+          2,
+          "0"
+        ),
+    ]
+      .join("-");
+  }
+
+
+  if (
+    treatmentType ===
+    "Vermifuge"
+  ) {
+
+    nextInput.value =
+      addMonthsSafe(
+        administeredAt,
+        6
+      );
+
+    nextInput.readOnly =
+      true;
+
+    return;
+  }
+
+
+  if (
+    treatmentType ===
+    "Antiparasitaire"
+  ) {
+
+    nextInput.value =
+      addMonthsSafe(
+        administeredAt,
+        12
+      );
+
+    nextInput.readOnly =
+      true;
+
+    return;
+  }
+
+
+  /*
+   * Médicament / Autre :
+   * saisie manuelle autorisée.
+   */
+  nextInput.readOnly =
+    false;
+}
+
+
+document
+  .getElementById(
+    "treatment-type"
+  )
+  .addEventListener(
+    "change",
+    calculateTreatmentDueDate
+  );
+
+
+document
+  .getElementById(
+    "treatment-date"
+  )
+  .addEventListener(
+    "change",
+    calculateTreatmentDueDate
+  );
 
 /* =========================================================
    SAVE TREATMENT
