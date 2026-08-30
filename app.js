@@ -1289,7 +1289,204 @@ async function loadHome() {
           : "À jour";
   }
 
-
+  /* =======================================================
+     SUIVI SANTÉ - ACCUEIL
+  ======================================================= */
+  
+  const {
+    data: homeVaccines,
+    error: homeVaccinesError
+  } =
+    await supabaseClient
+      .from(
+        "vaccinations"
+      )
+      .select("*")
+      .order(
+        "vaccination_date",
+        {
+          ascending: false
+        }
+      )
+      .limit(1);
+  
+  
+  if (
+    homeVaccinesError
+  ) {
+    console.error(
+      "home vaccinations:",
+      homeVaccinesError
+    );
+  }
+  
+  
+  const {
+    data: homeTreatments,
+    error: homeTreatmentsError
+  } =
+    await supabaseClient
+      .from(
+        "treatments"
+      )
+      .select("*")
+      .order(
+        "administered_at",
+        {
+          ascending: false
+        }
+      );
+  
+  
+  if (
+    homeTreatmentsError
+  ) {
+    console.error(
+      "home treatments:",
+      homeTreatmentsError
+    );
+  }
+  
+  
+  const homeLatestVaccine =
+    homeVaccines?.[0];
+  
+  
+  const homeLatestDewormer =
+    homeTreatments
+      ?.find(
+        treatment =>
+          treatment
+            .treatment_type
+          === "Vermifuge"
+      );
+  
+  
+  const homeLatestAntiparasitic =
+    homeTreatments
+      ?.find(
+        treatment =>
+          treatment
+            .treatment_type
+          === "Antiparasitaire"
+      );
+  
+  
+  const homeVaccineStatus =
+    healthDueStatus(
+      homeLatestVaccine
+        ?.next_due_date
+    );
+  
+  
+  const homeDewormerStatus =
+    healthDueStatus(
+      homeLatestDewormer
+        ?.next_due_date
+    );
+  
+  
+  const homeAntiparasiticStatus =
+    healthDueStatus(
+      homeLatestAntiparasitic
+        ?.next_due_date
+    );
+  
+  
+  function homeHealthRow(
+    icon,
+    title,
+    status,
+    dueDate
+  ) {
+  
+    return `
+      <div
+        class="home-health-row ${status.className}"
+      >
+  
+        <div class="home-health-icon">
+          ${icon}
+        </div>
+  
+  
+        <div class="home-health-main">
+  
+          <strong>
+            ${title}
+          </strong>
+  
+          <small>
+            ${
+              dueDate
+                ? `Échéance ${formatDate(
+                    dueDate
+                  )}`
+                : "Échéance non renseignée"
+            }
+          </small>
+  
+        </div>
+  
+  
+        <div class="home-health-status">
+  
+          <strong>
+            ${status.icon}
+          </strong>
+  
+          <small>
+            ${status.label}
+          </small>
+  
+        </div>
+  
+      </div>
+    `;
+  }
+  
+  
+  const homeHealthAlerts =
+    document.getElementById(
+      "home-health-alerts"
+    );
+  
+  
+  if (
+    homeHealthAlerts
+  ) {
+  
+    homeHealthAlerts.innerHTML =
+      homeHealthRow(
+        "💉",
+        "Vaccins",
+        homeVaccineStatus,
+        homeLatestVaccine
+          ?.next_due_date
+      )
+  
+      +
+  
+      homeHealthRow(
+        "💊",
+        "Vermifuge",
+        homeDewormerStatus,
+        homeLatestDewormer
+          ?.next_due_date
+      )
+  
+      +
+  
+      homeHealthRow(
+        "🦟",
+        "Antiparasitaire",
+        homeAntiparasiticStatus,
+        homeLatestAntiparasitic
+          ?.next_due_date
+      );
+  }
+  
+  
   /* =======================================================
      DEVICES
   ======================================================= */
