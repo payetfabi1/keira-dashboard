@@ -2768,7 +2768,24 @@ document
     "click",
     async () => {
 
-      const date =
+      const treatmentType =
+        document
+          .getElementById(
+            "treatment-type"
+          )
+          .value;
+
+
+      const productName =
+        document
+          .getElementById(
+            "treatment-product"
+          )
+          .value
+          .trim();
+
+
+      const administeredAt =
         document
           .getElementById(
             "treatment-date"
@@ -2776,10 +2793,162 @@ document
           .value;
 
 
-      if (!date) {
+      if (!administeredAt) {
         return;
       }
 
+
+      /* =====================================================
+         CALCUL AUTOMATIQUE DE L'ÉCHÉANCE
+      ===================================================== */
+
+      let nextDueDate =
+        null;
+
+
+      function addMonthsSafe(
+        dateString,
+        months
+      ) {
+
+        const [
+          year,
+          month,
+          day
+        ] =
+          dateString
+            .split("-")
+            .map(Number);
+
+
+        const targetMonthIndex =
+          (
+            month - 1
+            + months
+          );
+
+
+        const targetYear =
+          year
+          + Math.floor(
+            targetMonthIndex / 12
+          );
+
+
+        const targetMonth =
+          (
+            (
+              targetMonthIndex % 12
+            )
+            + 12
+          )
+          % 12;
+
+
+        /*
+         * Dernier jour du mois cible.
+         */
+        const lastDayOfTargetMonth =
+          new Date(
+            targetYear,
+            targetMonth + 1,
+            0
+          )
+            .getDate();
+
+
+        /*
+         * Si on part du 31 août et qu'on ajoute 6 mois,
+         * on obtient le 28/29 février, pas début mars.
+         */
+        const targetDay =
+          Math.min(
+            day,
+            lastDayOfTargetMonth
+          );
+
+
+        return [
+          targetYear,
+          String(
+            targetMonth + 1
+          )
+            .padStart(
+              2,
+              "0"
+            ),
+          String(
+            targetDay
+          )
+            .padStart(
+              2,
+              "0"
+            ),
+        ]
+          .join("-");
+      }
+
+
+      if (
+        treatmentType ===
+        "Vermifuge"
+      ) {
+
+        /*
+         * Vermifuge :
+         * prochaine échéance dans 6 mois.
+         */
+        nextDueDate =
+          addMonthsSafe(
+            administeredAt,
+            6
+          );
+      }
+
+
+      if (
+        treatmentType ===
+        "Antiparasitaire"
+      ) {
+
+        /*
+         * Antiparasitaire :
+         * prochaine échéance dans 12 mois.
+         */
+        nextDueDate =
+          addMonthsSafe(
+            administeredAt,
+            12
+          );
+      }
+
+
+      /*
+       * Pour Médicament / Autre :
+       * on garde éventuellement la date saisie
+       * manuellement dans le formulaire.
+       */
+      if (
+        treatmentType !==
+          "Vermifuge"
+        &&
+        treatmentType !==
+          "Antiparasitaire"
+      ) {
+
+        nextDueDate =
+          document
+            .getElementById(
+              "treatment-next"
+            )
+            .value
+          || null;
+      }
+
+
+      /* =====================================================
+         ENREGISTREMENT SUPABASE
+      ===================================================== */
 
       const {
         error
@@ -2791,30 +2960,17 @@ document
           .insert({
 
             treatment_type:
-              document
-                .getElementById(
-                  "treatment-type"
-                )
-                .value,
+              treatmentType,
 
             product_name:
-              document
-                .getElementById(
-                  "treatment-product"
-                )
-                .value
+              productName
               || null,
 
             administered_at:
-              date,
+              administeredAt,
 
             next_due_date:
-              document
-                .getElementById(
-                  "treatment-next"
-                )
-                .value
-              || null
+              nextDueDate,
           });
 
 
@@ -2831,6 +2987,10 @@ document
       }
 
 
+      /* =====================================================
+         FERMETURE + RESET DU FORMULAIRE
+      ===================================================== */
+
       document
         .getElementById(
           "treatment-modal"
@@ -2840,10 +3000,34 @@ document
         );
 
 
+      document
+        .getElementById(
+          "treatment-product"
+        )
+        .value =
+          "";
+
+
+      document
+        .getElementById(
+          "treatment-date"
+        )
+        .value =
+          "";
+
+
+      document
+        .getElementById(
+          "treatment-next"
+        )
+        .value =
+          "";
+
+
       await loadHealth();
+      await loadHome();
     }
   );
-
 
 /* =========================================================
    WET FOOD BUTTON
