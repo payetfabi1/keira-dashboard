@@ -1621,6 +1621,14 @@ if (
         </div>
       `;
 
+    setupHistoryToggle(
+    document.getElementById(
+      "vaccination-list"
+    ),
+    ".health-row",
+    3
+  );
+
   setupHistoryToggle(
   weightHistory,
   ".weight-history-row",
@@ -2739,6 +2747,14 @@ async function loadHealth() {
             Aucune donnée
           </div>
         `;
+
+    setupHistoryToggle(
+    document.getElementById(
+      "treatment-list"
+    ),
+    ".health-row",
+    3
+  );
 
 
   /* =======================================================
