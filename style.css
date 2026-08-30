@@ -1166,3 +1166,8 @@ nav button.active {
 
   text-align: right;
 }
+
+#treatment-next:read-only {
+  background: #f3f3f3;
+  color: #777;
+}
