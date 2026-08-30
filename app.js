@@ -2838,3 +2838,25 @@ if (
     }
   );
 }
+
+const openFeederCamera =
+  document.getElementById(
+    "open-feeder-camera"
+  );
+
+if (openFeederCamera) {
+
+  openFeederCamera.addEventListener(
+    "click",
+    () => {
+
+      feederActionsModal
+        ?.classList.add(
+          "hidden"
+        );
+
+      window.location.href =
+        "petlibrolite://";
+    }
+  );
+}
