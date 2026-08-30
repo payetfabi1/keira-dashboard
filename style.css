@@ -23,6 +23,11 @@ body {
   display: none !important;
 }
 
+
+/* =========================================================
+   APP
+========================================================= */
+
 .app {
   max-width: 620px;
   margin: auto;
@@ -34,7 +39,9 @@ body {
 }
 
 
-/* HEADER */
+/* =========================================================
+   HEADER
+========================================================= */
 
 .topbar {
   display: flex;
@@ -81,7 +88,9 @@ h3 {
 }
 
 
-/* HERO */
+/* =========================================================
+   HERO
+========================================================= */
 
 .hero {
   background: white;
@@ -108,7 +117,9 @@ h3 {
 }
 
 
-/* GOALS */
+/* =========================================================
+   GOALS
+========================================================= */
 
 .goal-card {
   background: white;
@@ -197,9 +208,15 @@ h3 {
   background: #39a8ff;
 }
 
+.wet-food-progress {
+  background: #ff9500;
+}
+
 .goal-footer {
   display: flex;
   justify-content: space-between;
+
+  gap: 12px;
 
   color: #888;
 
@@ -207,11 +224,63 @@ h3 {
 }
 
 
-/* HEALTH CARDS */
+/* =========================================================
+   WET FOOD
+========================================================= */
+
+.wet-food-button {
+  width: 100%;
+
+  margin-top: 15px;
+
+  padding: 14px 16px;
+
+  border: 0;
+
+  border-radius: 15px;
+
+  background: #f2f2f2;
+
+  color: #333;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  transition:
+    transform .15s ease,
+    background .2s ease;
+}
+
+.wet-food-button.due {
+  background: #ff9500;
+  color: white;
+}
+
+.wet-food-button.done {
+  background: #e6f7e9;
+  color: #25863b;
+}
+
+.wet-food-button:active {
+  transform: scale(.98);
+}
+
+.wet-food-button:disabled {
+  opacity: 1;
+}
+
+
+/* =========================================================
+   HEALTH SUMMARY CARDS
+========================================================= */
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+
+  grid-template-columns:
+    1fr 1fr;
+
   gap: 13px;
 }
 
@@ -256,7 +325,9 @@ h3 {
 }
 
 
-/* DEVICES */
+/* =========================================================
+   DEVICES
+========================================================= */
 
 .devices {
   display: flex;
@@ -281,6 +352,8 @@ h3 {
 .device-icon {
   width: 49px;
   height: 49px;
+
+  flex: 0 0 49px;
 
   background: #f4f4f4;
 
@@ -312,32 +385,29 @@ h3 {
   color: #aaa !important;
 }
 
-.wifi {
-  font-size: 15px;
+.device-state-dot {
+  width: 12px;
+  height: 12px;
 
-  letter-spacing: -3px;
+  flex: 0 0 12px;
 
-  font-weight: 800;
+  border-radius: 50%;
+
+  background: #aaa;
 }
 
-.wifi.good {
-  color: #34c759;
+.device-state-dot.online {
+  background: #34c759;
 }
 
-.wifi.medium {
-  color: #ff9500;
-}
-
-.wifi.bad {
-  color: #ff3b30;
-}
-
-.wifi.offline {
-  color: #bbb;
+.device-state-dot.offline {
+  background: #ff3b30;
 }
 
 
-/* MAINTENANCE */
+/* =========================================================
+   MAINTENANCE
+========================================================= */
 
 .maintenance-card {
   background: white;
@@ -348,14 +418,15 @@ h3 {
 }
 
 .maintenance-row {
-  padding: 10px 0;
+  padding: 11px 0;
 
   display: flex;
   align-items: center;
 
-  gap: 10px;
+  gap: 11px;
 
-  border-bottom: 1px solid #f2f2f2;
+  border-bottom:
+    1px solid #f2f2f2;
 }
 
 .maintenance-row:last-child {
@@ -363,7 +434,17 @@ h3 {
 }
 
 .maintenance-icon {
+  width: 27px;
+
+  flex: 0 0 27px;
+
   font-size: 21px;
+
+  text-align: center;
+}
+
+.maintenance-row strong {
+  display: block;
 }
 
 .maintenance-row small {
@@ -375,7 +456,9 @@ h3 {
 }
 
 
-/* HISTORY */
+/* =========================================================
+   HISTORY
+========================================================= */
 
 .page-title {
   margin-bottom: 22px;
@@ -420,7 +503,7 @@ h3 {
 }
 
 .history-goal {
-  margin-bottom: 20px;
+  margin-bottom: 21px;
 }
 
 .history-goal:last-child {
@@ -431,7 +514,9 @@ h3 {
   display: flex;
   justify-content: space-between;
 
-  margin-bottom: 7px;
+  gap: 15px;
+
+  margin-bottom: 8px;
 }
 
 .history-goal-header strong {
@@ -440,6 +525,8 @@ h3 {
 
 .history-goal-header span {
   color: #888;
+
+  text-align: right;
 }
 
 .history-progress {
@@ -464,7 +551,12 @@ h3 {
   background: #39a8ff;
 }
 
-.meal-times {
+.history-progress.wet-food > div {
+  background: #ff9500;
+}
+
+.meal-times,
+.wet-food-history-state {
   color: #999;
 
   margin-top: 8px;
@@ -473,7 +565,9 @@ h3 {
 }
 
 
-/* HEALTH */
+/* =========================================================
+   HEALTH
+========================================================= */
 
 .health-card {
   background: white;
@@ -489,6 +583,8 @@ h3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  gap: 10px;
 }
 
 .health-card-title > div {
@@ -518,7 +614,8 @@ h3 {
 .health-row {
   padding: 12px 0;
 
-  border-top: 1px solid #f2f2f2;
+  border-top:
+    1px solid #f2f2f2;
 
   display: flex;
   justify-content: space-between;
@@ -541,7 +638,9 @@ h3 {
 }
 
 
-/* LOGIN */
+/* =========================================================
+   LOGIN
+========================================================= */
 
 .login-screen {
   min-height: 100vh;
@@ -554,6 +653,7 @@ h3 {
 
 .login-card {
   width: 100%;
+
   max-width: 450px;
 
   margin: auto;
@@ -577,7 +677,8 @@ select {
 
   margin: 7px 0 15px;
 
-  border: 1px solid #ddd;
+  border:
+    1px solid #ddd;
 
   border-radius: 14px;
 
@@ -621,7 +722,9 @@ select {
 }
 
 
-/* MODALS */
+/* =========================================================
+   MODALS
+========================================================= */
 
 .modal {
   position: fixed;
@@ -632,11 +735,13 @@ select {
   display: flex;
   align-items: flex-end;
 
-  background: rgba(0,0,0,.3);
+  background:
+    rgba(0,0,0,.3);
 }
 
 .modal-content {
   width: 100%;
+
   max-width: 620px;
 
   margin: auto;
@@ -644,17 +749,26 @@ select {
   padding:
     25px
     22px
-    calc(25px + env(safe-area-inset-bottom));
+    calc(
+      25px
+      + env(safe-area-inset-bottom)
+    );
 
   background: white;
 
-  border-radius: 28px 28px 0 0;
+  border-radius:
+    28px 28px 0 0;
+}
+
+.modal-content h2 {
+  margin-top: 0;
 }
 
 .cancel-button {
   width: 100%;
 
   margin-top: 10px;
+
   padding: 14px;
 
   border: 0;
@@ -665,7 +779,9 @@ select {
 }
 
 
-/* NAV */
+/* =========================================================
+   NAV
+========================================================= */
 
 nav {
   position: fixed;
@@ -678,9 +794,12 @@ nav {
       env(safe-area-inset-bottom)
     );
 
-  transform: translateX(-50%);
+  transform:
+    translateX(-50%);
 
-  width: calc(100% - 32px);
+  width:
+    calc(100% - 32px);
+
   max-width: 580px;
 
   display: flex;
@@ -690,12 +809,15 @@ nav {
 
   border-radius: 27px;
 
-  background: rgba(255,255,255,.95);
+  background:
+    rgba(255,255,255,.95);
 
-  backdrop-filter: blur(20px);
+  backdrop-filter:
+    blur(20px);
 
   box-shadow:
-    0 8px 35px rgba(0,0,0,.13);
+    0 8px 35px
+    rgba(0,0,0,.13);
 }
 
 nav button {
