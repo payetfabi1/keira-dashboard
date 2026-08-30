@@ -2993,3 +2993,150 @@ if (
       }
     );
 }
+
+const feedNowButton =
+  document.getElementById(
+    "feed-now-button"
+  );
+
+if (
+  feedNowButton
+) {
+
+  feedNowButton.addEventListener(
+    "click",
+    async () => {
+
+      const confirmed =
+        window.confirm(
+          "Distribuer 10 g de croquettes maintenant ?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+
+      feedNowButton.disabled =
+        true;
+
+      const title =
+        feedNowButton.querySelector(
+          "strong"
+        );
+
+      const oldText =
+        title?.textContent
+        || "Distribuer 10 g";
+
+      if (title) {
+        title.textContent =
+          "Distribution...";
+      }
+
+
+      try {
+
+        const {
+          data: {
+            session
+          }
+        } =
+          await supabaseClient
+            .auth
+            .getSession();
+
+
+        if (!session) {
+
+          throw new Error(
+            "Session expirée"
+          );
+        }
+
+
+        const response =
+          await fetch(
+            "https://iayxqoevmkhkhhtdmrrk.supabase.co/functions/v1/keira-device-actions",
+            {
+              method:
+                "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+
+                "Authorization":
+                  `Bearer ${session.access_token}`,
+              },
+
+              body:
+                JSON.stringify({
+                  action:
+                    "feed_10g",
+                }),
+            }
+          );
+
+
+        const result =
+          await response.json();
+
+
+        if (
+          !response.ok
+          ||
+          !result.ok
+        ) {
+
+          throw new Error(
+            result.error
+            || "Erreur inconnue"
+          );
+        }
+
+
+        alert(
+          "✅ Distribution de 10 g demandée"
+        );
+
+
+        feederActionsModal
+          ?.classList.add(
+            "hidden"
+          );
+
+
+        /*
+         * Le prochain sync Supabase
+         * récupérera le workRecord PETLIBRO.
+         */
+        setTimeout(
+          () => {
+            loadHome();
+          },
+          6000
+        );
+
+      } catch (
+        error
+      ) {
+
+        alert(
+          "⚠️ Distribution impossible : "
+          + error.message
+        );
+
+      } finally {
+
+        feedNowButton.disabled =
+          false;
+
+        if (title) {
+          title.textContent =
+            oldText;
+        }
+      }
+    }
+  );
+}
