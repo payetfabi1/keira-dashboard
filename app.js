@@ -4,6 +4,10 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
   "sb_publishable_qLhvGcHGqkaHMEj_giw1Ww_e3J_RoKR";
 
+const FOOD_GOAL = 30;
+const FOOD_DOSES_GOAL = 3;
+const WATER_GOAL = 100;
+
 
 const supabaseClient =
   window.supabase.createClient(
@@ -13,25 +17,38 @@ const supabaseClient =
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        detectSessionInUrl: true
+        detectSessionInUrl: true,
+
+        storage:
+          window.localStorage
       }
     }
   );
 
 
 const loginScreen =
-  document.getElementById("login-screen");
+  document.getElementById(
+    "login-screen"
+  );
+
+const passwordScreen =
+  document.getElementById(
+    "password-screen"
+  );
 
 const dashboard =
-  document.getElementById("dashboard");
+  document.getElementById(
+    "dashboard"
+  );
 
 
-/* ============================================================
+/* =========================================================
    HELPERS
-============================================================ */
+========================================================= */
 
-function parisDay() {
-  return new Date().toLocaleDateString(
+function parisDay(date = new Date()) {
+
+  return date.toLocaleDateString(
     "en-CA",
     {
       timeZone: "Europe/Paris"
@@ -40,27 +57,107 @@ function parisDay() {
 }
 
 
-function formatDate(date) {
+function formatDate(value) {
 
-  if (!date) {
+  if (!value) {
     return "—";
   }
 
-  return new Date(date).toLocaleDateString(
-    "fr-FR"
+  return new Date(value)
+    .toLocaleDateString(
+      "fr-FR"
+    );
+}
+
+
+function percent(
+  value,
+  goal
+) {
+
+  return Math.min(
+    100,
+    Math.round(
+      (
+        Number(value || 0)
+        / goal
+      ) * 100
+    )
   );
 }
 
 
-function formatTime(date) {
+function daysAgo(
+  timestamp
+) {
 
-  return new Date(date).toLocaleTimeString(
-    "fr-FR",
-    {
-      hour: "2-digit",
-      minute: "2-digit"
-    }
+  if (!timestamp) {
+    return null;
+  }
+
+  const now =
+    Date.now();
+
+  const diff =
+    now -
+    Number(timestamp);
+
+  return Math.max(
+    0,
+    Math.floor(
+      diff /
+      86400000
+    )
   );
+}
+
+
+function daysText(days) {
+
+  if (days === 0) {
+    return "aujourd'hui";
+  }
+
+  if (days === 1) {
+    return "hier";
+  }
+
+  return `il y a ${days} jours`;
+}
+
+
+function wifiClass(
+  rssi,
+  online
+) {
+
+  if (!online) {
+    return "offline";
+  }
+
+  if (rssi >= -60) {
+    return "good";
+  }
+
+  if (rssi >= -72) {
+    return "medium";
+  }
+
+  return "bad";
+}
+
+
+function wifiLabel(rssi) {
+
+  if (rssi >= -60) {
+    return "Wi-Fi excellent";
+  }
+
+  if (rssi >= -72) {
+    return "Wi-Fi moyen";
+  }
+
+  return "Wi-Fi faible";
 }
 
 
@@ -70,113 +167,277 @@ function showPage(pageName) {
     .querySelectorAll(".page")
     .forEach(
       page =>
-        page.classList.add("hidden")
+        page.classList.add(
+          "hidden"
+        )
     );
+
 
   document
     .getElementById(
       `page-${pageName}`
     )
-    .classList.remove("hidden");
-
-
-  document
-    .querySelectorAll(".nav-button")
-    .forEach(
-      button =>
-        button.classList.remove("active")
+    .classList.remove(
+      "hidden"
     );
 
 
-  const activeButton =
+  document
+    .querySelectorAll(
+      ".nav-button"
+    )
+    .forEach(
+      button =>
+        button.classList.remove(
+          "active"
+        )
+    );
+
+
+  const button =
     document.querySelector(
       `.nav-button[data-page="${pageName}"]`
     );
 
-  if (activeButton) {
-    activeButton.classList.add("active");
+
+  if (button) {
+    button.classList.add(
+      "active"
+    );
   }
 
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  window.scrollTo(
+    0,
+    0
+  );
 
 
-  if (pageName === "history") {
+  if (
+    pageName === "history"
+  ) {
     loadHistory();
   }
 
-  if (pageName === "health") {
+
+  if (
+    pageName === "health"
+  ) {
     loadHealth();
   }
 }
 
 
-/* ============================================================
-   AUTH
-============================================================ */
+/* =========================================================
+   AUTH PASSWORD
+========================================================= */
 
 document
-  .getElementById("login-button")
+  .getElementById(
+    "login-button"
+  )
   .addEventListener(
     "click",
     async () => {
 
       const email =
         document
-          .getElementById("login-email")
+          .getElementById(
+            "login-email"
+          )
           .value
           .trim();
+
+
+      const password =
+        document
+          .getElementById(
+            "login-password"
+          )
+          .value;
+
 
       const message =
         document.getElementById(
           "login-message"
         );
 
-      if (!email) {
+
+      if (
+        !email ||
+        !password
+      ) {
 
         message.textContent =
-          "Entre ton adresse e-mail.";
+          "Renseigne ton email et ton mot de passe.";
 
         return;
       }
 
 
       message.textContent =
-        "Envoi du lien...";
+        "Connexion...";
 
 
-      const { error } =
-        await supabaseClient.auth
-          .signInWithOtp(
+      const {
+        error
+      } =
+        await supabaseClient
+          .auth
+          .signInWithPassword({
+            email,
+            password
+          });
+
+
+      if (error) {
+
+        message.textContent =
+          "Connexion impossible : "
+          + error.message;
+
+        return;
+      }
+
+
+      message.textContent =
+        "";
+
+      initialize();
+    }
+  );
+
+
+document
+  .getElementById(
+    "forgot-password"
+  )
+  .addEventListener(
+    "click",
+    async () => {
+
+      const email =
+        document
+          .getElementById(
+            "login-email"
+          )
+          .value
+          .trim();
+
+
+      const message =
+        document.getElementById(
+          "login-message"
+        );
+
+
+      if (!email) {
+
+        message.textContent =
+          "Entre d'abord ton adresse email.";
+
+        return;
+      }
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .auth
+          .resetPasswordForEmail(
+            email,
             {
-              email,
-
-              options: {
-                emailRedirectTo:
-                  "https://payetfabi1.github.io/keira-dashboard/"
-              }
+              redirectTo:
+                "https://payetfabi1.github.io/keira-dashboard/"
             }
           );
 
 
       message.textContent =
         error
-          ? `Erreur : ${error.message}`
-          : "📩 Lien envoyé. Regarde tes e-mails.";
+          ? error.message
+          : "📩 Email envoyé. Clique sur le lien pour définir ton mot de passe.";
     }
   );
 
 
 document
-  .getElementById("logout-button")
+  .getElementById(
+    "save-password"
+  )
   .addEventListener(
     "click",
     async () => {
 
-      await supabaseClient.auth
+      const password =
+        document
+          .getElementById(
+            "new-password"
+          )
+          .value;
+
+
+      const message =
+        document.getElementById(
+          "password-message"
+        );
+
+
+      if (
+        password.length < 8
+      ) {
+
+        message.textContent =
+          "Utilise au moins 8 caractères.";
+
+        return;
+      }
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .auth
+          .updateUser({
+            password
+          });
+
+
+      if (error) {
+
+        message.textContent =
+          error.message;
+
+        return;
+      }
+
+
+      message.textContent =
+        "✅ Mot de passe enregistré.";
+
+
+      setTimeout(
+        () => {
+          initialize();
+        },
+        800
+      );
+    }
+  );
+
+
+document
+  .getElementById(
+    "logout-button"
+  )
+  .addEventListener(
+    "click",
+    async () => {
+
+      await supabaseClient
+        .auth
         .signOut();
 
       location.reload();
@@ -184,32 +445,69 @@ document
   );
 
 
-/* ============================================================
-   NAVIGATION
-============================================================ */
+/* =========================================================
+   NAV
+========================================================= */
 
 document
-  .querySelectorAll("[data-page]")
+  .querySelectorAll(
+    "[data-page]"
+  )
   .forEach(
     element => {
 
       element.addEventListener(
         "click",
-        () => {
-
-          const page =
-            element.dataset.page;
-
-          showPage(page);
-        }
+        () =>
+          showPage(
+            element.dataset.page
+          )
       );
     }
   );
 
 
-/* ============================================================
-   DEVICES
-============================================================ */
+/* =========================================================
+   GOAL UI
+========================================================= */
+
+function updateGoal(
+  prefix,
+  value,
+  goal
+) {
+
+  const p =
+    percent(
+      value,
+      goal
+    );
+
+
+  document
+    .getElementById(
+      `${prefix}-progress`
+    )
+    .style
+    .width =
+      `${p}%`;
+
+
+  document
+    .getElementById(
+      `${prefix}-percent`
+    )
+    .textContent =
+      `${p} %`;
+
+
+  return p;
+}
+
+
+/* =========================================================
+   DEVICE UI
+========================================================= */
 
 function setDevice(
   prefix,
@@ -221,9 +519,10 @@ function setDevice(
       `${prefix}-status`
     );
 
-  const dot =
+
+  const wifi =
     document.getElementById(
-      `${prefix}-dot`
+      `${prefix}-wifi`
     );
 
 
@@ -232,74 +531,231 @@ function setDevice(
     status.textContent =
       "Données indisponibles";
 
-    dot.className =
-      "dot unknown";
+    wifi.className =
+      "wifi offline";
 
     return;
   }
 
 
-  if (device.online) {
-
-    status.textContent =
-      `🟢 En ligne · ${device.wifi_rssi ?? "?"} dBm`;
-
-    dot.className =
-      "dot online";
-
-  } else {
+  if (!device.online) {
 
     status.textContent =
       "🔴 Hors ligne";
 
-    dot.className =
-      "dot offline";
+    wifi.className =
+      "wifi offline";
+
+    return;
   }
 
 
-  if (prefix === "feeder") {
+  status.textContent =
+    "🟢 En ligne";
 
-    document.getElementById(
-      "feeder-extra"
-    ).textContent =
-      device.food_available
-        ? "Croquettes disponibles"
-        : "⚠️ Niveau de croquettes faible";
 
+  wifi.className =
+    "wifi "
+    + wifiClass(
+      device.wifi_rssi,
+      device.online
+    );
+
+
+  wifi.title =
+    wifiLabel(
+      device.wifi_rssi
+    );
+
+
+  if (
+    prefix === "feeder"
+  ) {
+
+    document
+      .getElementById(
+        "feeder-extra"
+      )
+      .textContent =
+        device.food_available
+          ? "Croquettes disponibles"
+          : "⚠️ Croquettes faibles";
   }
 
 
-  if (prefix === "fountain") {
+  if (
+    prefix === "fountain"
+  ) {
 
-    const parts = [];
+    const waterPercent =
+      device.water_percent;
 
-    if (
-      device.filter_days_remaining != null
-    ) {
-      parts.push(
-        `Filtre ${device.filter_days_remaining} j`
-      );
-    }
 
-    if (
-      device.cleaning_days_remaining != null
-    ) {
-      parts.push(
-        `Nettoyage ${device.cleaning_days_remaining} j`
-      );
-    }
-
-    document.getElementById(
-      "fountain-extra"
-    ).textContent =
-      parts.join(" · ");
+    document
+      .getElementById(
+        "fountain-extra"
+      )
+      .textContent =
+        waterPercent != null
+          ? `Niveau d'eau : ${waterPercent}%`
+          : "Fontaine opérationnelle";
   }
 }
 
 
-/* ============================================================
+/* =========================================================
+   MAINTENANCE
+========================================================= */
+
+function maintenanceHTML(
+  feeder,
+  fountain
+) {
+
+  const rawFountain =
+    fountain?.raw_data || {};
+
+
+  const rawFeeder =
+    feeder?.raw_data || {};
+
+
+  const filterAge =
+    daysAgo(
+      rawFountain
+        .filterStartWorkingTime
+    );
+
+
+  const cleaningAge =
+    daysAgo(
+      rawFountain
+        .machineCleaningTime
+    );
+
+
+  const desiccantRemaining =
+    feeder
+      ?.desiccant_days_remaining;
+
+
+  const rows = [];
+
+
+  if (
+    filterAge != null
+  ) {
+
+    rows.push(`
+      <div class="maintenance-row">
+
+        <span class="maintenance-icon">
+          ${
+            filterAge < 12
+              ? "✅"
+              : filterAge < 15
+              ? "🟠"
+              : "🔴"
+          }
+        </span>
+
+        <div>
+          <strong>Filtre fontaine</strong>
+
+          <small>
+            Changé ${
+              daysText(filterAge)
+            }
+            ${
+              filterAge >= 12
+                ? ` · changement tous les 15 jours`
+                : ""
+            }
+          </small>
+        </div>
+
+      </div>
+    `);
+  }
+
+
+  if (
+    cleaningAge != null
+  ) {
+
+    rows.push(`
+      <div class="maintenance-row">
+
+        <span class="maintenance-icon">
+          ${
+            cleaningAge < 12
+              ? "✅"
+              : cleaningAge < 15
+              ? "🟠"
+              : "🔴"
+          }
+        </span>
+
+        <div>
+          <strong>Nettoyage fontaine</strong>
+
+          <small>
+            Fait ${
+              daysText(cleaningAge)
+            }
+          </small>
+        </div>
+
+      </div>
+    `);
+  }
+
+
+  if (
+    desiccantRemaining != null
+  ) {
+
+    rows.push(`
+      <div class="maintenance-row">
+
+        <span class="maintenance-icon">
+          ${
+            desiccantRemaining < 0
+              ? "🔴"
+              : desiccantRemaining <= 3
+              ? "🟠"
+              : "✅"
+          }
+        </span>
+
+        <div>
+
+          <strong>
+            Dessiccant
+          </strong>
+
+          <small>
+            ${
+              desiccantRemaining < 0
+                ? "À remplacer"
+                : `Encore ${desiccantRemaining} jour(s)`
+            }
+          </small>
+
+        </div>
+
+      </div>
+    `);
+  }
+
+
+  return rows.join("");
+}
+
+
+/* =========================================================
    HOME
-============================================================ */
+========================================================= */
 
 async function loadHome() {
 
@@ -307,17 +763,19 @@ async function loadHome() {
     parisDay();
 
 
-  /* nourriture */
+  /* FOOD */
 
   const {
     data: feeding
   } =
     await supabaseClient
-      .from("feeding_events")
+      .from(
+        "feeding_events"
+      )
       .select("*")
-      .gte(
-        "event_time",
-        `${today}T00:00:00+00:00`
+      .eq(
+        "success",
+        true
       )
       .order(
         "event_time",
@@ -328,26 +786,23 @@ async function loadHome() {
 
 
   const todayFood =
-    (feeding || []).filter(
-      event => {
-
-        return new Date(
-          event.event_time
-        )
-          .toLocaleDateString(
-            "en-CA",
-            {
-              timeZone:
-                "Europe/Paris"
-            }
-          ) === today;
-      }
-    );
+    (feeding || [])
+      .filter(
+        e =>
+          parisDay(
+            new Date(
+              e.event_time
+            )
+          ) === today
+      );
 
 
-  const grams =
+  const totalFood =
     todayFood.reduce(
-      (sum, event) =>
+      (
+        sum,
+        event
+      ) =>
         sum +
         Number(
           event.actual_grams || 0
@@ -356,29 +811,48 @@ async function loadHome() {
     );
 
 
-  document.getElementById(
-    "food"
-  ).textContent =
-    `${grams} g`;
+  document
+    .getElementById(
+      "food-current"
+    )
+    .textContent =
+      `${totalFood} g`;
 
 
-  document.getElementById(
-    "meals"
-  ).textContent =
-    `${todayFood.length} distribution${
-      todayFood.length === 1
-        ? ""
-        : "s"
-    }`;
+  document
+    .getElementById(
+      "food-doses"
+    )
+    .textContent =
+      `${todayFood.length} / ${FOOD_DOSES_GOAL} doses`;
 
 
-  /* eau */
+  updateGoal(
+    "food",
+    totalFood,
+    FOOD_GOAL
+  );
+
+
+  document
+    .getElementById(
+      "food-goal-state"
+    )
+    .textContent =
+      totalFood >= FOOD_GOAL
+        ? "✅ Objectif atteint"
+        : `${FOOD_GOAL - totalFood} g restants`;
+
+
+  /* WATER */
 
   const {
     data: waterRows
   } =
     await supabaseClient
-      .from("water_daily")
+      .from(
+        "water_daily"
+      )
       .select("*")
       .eq(
         "day",
@@ -391,29 +865,64 @@ async function loadHome() {
     waterRows?.[0];
 
 
-  document.getElementById(
-    "water"
-  ).textContent =
-    `${water?.total_ml ?? 0} ml`;
+  const waterMl =
+    Number(
+      water?.total_ml || 0
+    );
 
 
-  document.getElementById(
-    "drinks"
-  ).textContent =
-    `${water?.drink_times ?? 0} passage${
-      water?.drink_times === 1
-        ? ""
-        : "s"
-    }`;
+  const waterVisits =
+    Number(
+      water?.drink_times || 0
+    );
 
 
-  /* poids */
+  document
+    .getElementById(
+      "water-current"
+    )
+    .textContent =
+      `${waterMl} ml`;
+
+
+  document
+    .getElementById(
+      "water-visits"
+    )
+    .textContent =
+      `${waterVisits} prise${
+        waterVisits === 1
+          ? ""
+          : "s"
+      }`;
+
+
+  updateGoal(
+    "water",
+    waterMl,
+    WATER_GOAL
+  );
+
+
+  document
+    .getElementById(
+      "water-goal-state"
+    )
+    .textContent =
+      waterMl >= WATER_GOAL
+        ? "✅ Objectif atteint"
+        : `${WATER_GOAL - waterMl} ml restants`;
+
+
+  /* WEIGHT */
 
   const {
     data: weights
   } =
     await supabaseClient
-      .from("weight_entries")
+      .from(
+        "weight_entries"
+      )
       .select("*")
       .order(
         "measured_at",
@@ -424,36 +933,39 @@ async function loadHome() {
       .limit(1);
 
 
-  if (weights?.length) {
+  if (
+    weights?.length
+  ) {
 
-    document.getElementById(
-      "weight"
-    ).textContent =
-      `${weights[0].weight_kg} kg`;
+    document
+      .getElementById(
+        "weight"
+      )
+      .textContent =
+        `${weights[0].weight_kg} kg`;
 
-    document.getElementById(
-      "weight-date"
-    ).textContent =
-      formatDate(
-        weights[0].measured_at
-      );
 
-  } else {
-
-    document.getElementById(
-      "weight"
-    ).textContent =
-      "À renseigner";
+    document
+      .getElementById(
+        "weight-date"
+      )
+      .textContent =
+        formatDate(
+          weights[0]
+            .measured_at
+        );
   }
 
 
-  /* vaccins */
+  /* VACCINES */
 
   const {
     data: vaccines
   } =
     await supabaseClient
-      .from("vaccinations")
+      .from(
+        "vaccinations"
+      )
       .select("*")
       .order(
         "next_due_date",
@@ -463,38 +975,47 @@ async function loadHome() {
       );
 
 
-  document.getElementById(
-    "vaccines"
-  ).textContent =
-    vaccines?.length || "À renseigner";
+  if (
+    vaccines?.length
+  ) {
 
+    document
+      .getElementById(
+        "vaccines"
+      )
+      .textContent =
+        vaccines.length;
 
-  if (vaccines?.length) {
 
     const next =
       vaccines.find(
-        vaccine =>
-          vaccine.next_due_date
+        v =>
+          v.next_due_date
       );
 
-    document.getElementById(
-      "next-vaccine"
-    ).textContent =
-      next
-        ? `Prochain : ${formatDate(
-            next.next_due_date
-          )}`
-        : `${vaccines.length} enregistré(s)`;
+
+    document
+      .getElementById(
+        "next-vaccine"
+      )
+      .textContent =
+        next
+          ? `Rappel ${formatDate(
+              next.next_due_date
+            )}`
+          : "À jour";
   }
 
 
-  /* devices */
+  /* DEVICES */
 
   const {
     data: devices
   } =
     await supabaseClient
-      .from("device_status")
+      .from(
+        "device_status"
+      )
       .select("*")
       .order(
         "measured_at",
@@ -508,14 +1029,16 @@ async function loadHome() {
   const feeder =
     devices?.find(
       d =>
-        d.device_model === "PLAF203"
+        d.device_model
+        === "PLAF203"
     );
 
 
   const fountain =
     devices?.find(
       d =>
-        d.device_model === "PLWF105"
+        d.device_model
+        === "PLWF105"
     );
 
 
@@ -524,202 +1047,109 @@ async function loadHome() {
     feeder
   );
 
+
   setDevice(
     "fountain",
     fountain
   );
 
 
-  /* global */
+  document
+    .getElementById(
+      "maintenance-list"
+    )
+    .innerHTML =
+      maintenanceHTML(
+        feeder,
+        fountain
+      );
 
-  const globalStatus =
+
+  const allOK =
+    feeder?.online &&
+    fountain?.online;
+
+
+  const global =
     document.getElementById(
       "global-status"
     );
 
 
-  if (
-    feeder?.online &&
-    fountain?.online
-  ) {
+  global.textContent =
+    allOK
+      ? "● En ligne"
+      : "● Attention";
 
-    globalStatus.textContent =
-      "● En ligne";
 
-    globalStatus.className =
-      "status ok";
+  global.className =
+    allOK
+      ? "status ok"
+      : "status ko";
 
-    document.getElementById(
+
+  document
+    .getElementById(
       "health-message"
-    ).textContent =
-      "Tout va bien 💚";
-
-  } else {
-
-    globalStatus.textContent =
-      "● Attention";
-
-    globalStatus.className =
-      "status ko";
-
-    document.getElementById(
-      "health-message"
-    ).textContent =
-      "Attention requise ⚠️";
-  }
+    )
+    .textContent =
+      allOK
+        ? "Tout va bien 💚"
+        : "Attention requise ⚠️";
 
 
-  /* maintenance */
+  document
+    .getElementById(
+      "updated"
+    )
+    .textContent =
+      new Date()
+        .toLocaleTimeString(
+          "fr-FR",
+          {
+            hour:
+              "2-digit",
 
-  const maintenance = [];
-
-
-  if (
-    fountain?.filter_days_remaining != null
-  ) {
-
-    maintenance.push(
-      `💧 Filtre fontaine : ${fountain.filter_days_remaining} jour(s)`
-    );
-  }
-
-
-  if (
-    fountain?.cleaning_days_remaining != null
-  ) {
-
-    maintenance.push(
-      `🧽 Nettoyage fontaine : ${fountain.cleaning_days_remaining} jour(s)`
-    );
-  }
-
-
-  if (
-    feeder?.desiccant_days_remaining != null
-  ) {
-
-    maintenance.push(
-      feeder.desiccant_days_remaining < 0
-        ? "⚠️ Dessiccant feeder à remplacer"
-        : `🍗 Dessiccant : ${feeder.desiccant_days_remaining} jour(s)`
-    );
-  }
-
-
-  document.getElementById(
-    "maintenance-list"
-  ).innerHTML =
-    maintenance.length
-      ? maintenance.join("<br>")
-      : "✅ Rien à prévoir";
-
-
-  document.getElementById(
-    "updated"
-  ).textContent =
-    new Date().toLocaleTimeString(
-      "fr-FR",
-      {
-        hour: "2-digit",
-        minute: "2-digit"
-      }
-    );
+            minute:
+              "2-digit"
+          }
+        );
 }
 
 
-/* ============================================================
+/* =========================================================
    HISTORY
-============================================================ */
+========================================================= */
 
 function last7Days() {
 
-  const result = [];
+  const days = [];
 
   const now =
     new Date();
 
 
   for (
-    let i = 6;
-    i >= 0;
-    i--
+    let i = 0;
+    i < 7;
+    i++
   ) {
 
-    const day =
+    const date =
       new Date(now);
 
-    day.setDate(
+    date.setDate(
       now.getDate() - i
     );
 
 
-    result.push(
-      day.toLocaleDateString(
-        "en-CA",
-        {
-          timeZone:
-            "Europe/Paris"
-        }
-      )
+    days.push(
+      parisDay(date)
     );
   }
 
-  return result;
-}
 
-
-function drawBars(
-  element,
-  values,
-  className = ""
-) {
-
-  const max =
-    Math.max(
-      ...values.map(v => v.value),
-      1
-    );
-
-
-  element.innerHTML =
-    values.map(
-      item => {
-
-        const height =
-          Math.max(
-            4,
-            (item.value / max) * 95
-          );
-
-
-        const label =
-          new Date(
-            `${item.day}T12:00:00`
-          )
-            .toLocaleDateString(
-              "fr-FR",
-              {
-                weekday: "short"
-              }
-            )
-            .replace(".", "");
-
-
-        return `
-          <div class="bar-column">
-            <div
-              class="bar ${className}"
-              style="height:${height}px"
-              title="${item.value}"
-            ></div>
-            <div class="bar-label">
-              ${label}
-            </div>
-          </div>
-        `;
-      }
-    )
-    .join("");
+  return days;
 }
 
 
@@ -729,256 +1159,329 @@ async function loadHistory() {
     last7Days();
 
 
-  const start =
-    `${days[0]}T00:00:00+00:00`;
-
-
   const {
     data: feeding
   } =
     await supabaseClient
-      .from("feeding_events")
+      .from(
+        "feeding_events"
+      )
       .select("*")
-      .gte(
-        "event_time",
-        start
+      .eq(
+        "success",
+        true
       )
       .order(
         "event_time",
-        {
-          ascending: false
-        }
-      );
-
-
-  const foodValues =
-    days.map(
-      day => {
-
-        const total =
-          (feeding || [])
-            .filter(
-              event =>
-                new Date(
-                  event.event_time
-                )
-                  .toLocaleDateString(
-                    "en-CA",
-                    {
-                      timeZone:
-                        "Europe/Paris"
-                    }
-                  ) === day
-            )
-            .reduce(
-              (sum, event) =>
-                sum +
-                Number(
-                  event.actual_grams || 0
-                ),
-              0
-            );
-
-
-        return {
-          day,
-          value: total
-        };
-      }
-    );
-
-
-  drawBars(
-    document.getElementById(
-      "food-chart"
-    ),
-    foodValues
-  );
-
-
-  document.getElementById(
-    "history-food-total"
-  ).textContent =
-    `${foodValues.reduce(
-      (sum, day) =>
-        sum + day.value,
-      0
-    )} g`;
-
-
-  const {
-    data: water
-  } =
-    await supabaseClient
-      .from("water_daily")
-      .select("*")
-      .gte(
-        "day",
-        days[0]
-      )
-      .order(
-        "day",
         {
           ascending: true
         }
       );
 
 
-  const waterValues =
-    days.map(
-      day => {
+  const {
+    data: water
+  } =
+    await supabaseClient
+      .from(
+        "water_daily"
+      )
+      .select("*")
+      .gte(
+        "day",
+        days[
+          days.length - 1
+        ]
+      );
 
-        const row =
-          water?.find(
-            item =>
-              item.day === day
+
+  const container =
+    document.getElementById(
+      "daily-history"
+    );
+
+
+  container.innerHTML =
+    days.map(
+      (
+        day,
+        index
+      ) => {
+
+        const foodEvents =
+          (feeding || [])
+            .filter(
+              e =>
+                parisDay(
+                  new Date(
+                    e.event_time
+                  )
+                )
+                === day
+            );
+
+
+        const grams =
+          foodEvents.reduce(
+            (
+              sum,
+              e
+            ) =>
+              sum +
+              Number(
+                e.actual_grams || 0
+              ),
+            0
           );
 
 
-        return {
-          day,
-          value:
-            Number(
-              row?.total_ml || 0
+        const waterRow =
+          water?.find(
+            w =>
+              w.day === day
+          );
+
+
+        const ml =
+          Number(
+            waterRow
+              ?.total_ml || 0
+          );
+
+
+        const drinks =
+          Number(
+            waterRow
+              ?.drink_times || 0
+          );
+
+
+        const foodPct =
+          percent(
+            grams,
+            FOOD_GOAL
+          );
+
+
+        const waterPct =
+          percent(
+            ml,
+            WATER_GOAL
+          );
+
+
+        const label =
+          index === 0
+            ? "Aujourd'hui"
+            : index === 1
+            ? "Hier"
+            : new Date(
+                `${day}T12:00:00`
+              )
+              .toLocaleDateString(
+                "fr-FR",
+                {
+                  weekday:
+                    "long",
+
+                  day:
+                    "numeric",
+
+                  month:
+                    "short"
+                }
+              );
+
+
+        const mealTimes =
+          foodEvents
+            .map(
+              e =>
+                new Date(
+                  e.event_time
+                )
+                .toLocaleTimeString(
+                  "fr-FR",
+                  {
+                    hour:
+                      "2-digit",
+
+                    minute:
+                      "2-digit",
+
+                    timeZone:
+                      "Europe/Paris"
+                  }
+                )
             )
-        };
-      }
-    );
+            .join(" · ");
 
 
-  drawBars(
-    document.getElementById(
-      "water-chart"
-    ),
-    waterValues,
-    "water-bar"
-  );
+        return `
+          <article class="day-card">
+
+            <div class="day-title">
+
+              <strong>
+                ${label}
+              </strong>
+
+              <small>
+                ${day}
+              </small>
+
+            </div>
 
 
-  document.getElementById(
-    "history-water-total"
-  ).textContent =
-    `${waterValues.reduce(
-      (sum, day) =>
-        sum + day.value,
-      0
-    )} ml`;
+            <div class="history-goal">
 
+              <div class="history-goal-header">
 
-  const timeline =
-    document.getElementById(
-      "feeding-history"
-    );
-
-
-  timeline.innerHTML =
-    (feeding || [])
-      .slice(0, 15)
-      .map(
-        event => {
-
-          const manual =
-            event.event_type ===
-            "MANUAL_FEEDING_SUCCESS";
-
-
-          return `
-            <div class="timeline-item">
-
-              <div>
                 <strong>
+                  🍗 ${foodEvents.length}/3 doses
+                </strong>
+
+                <span>
+                  ${grams}/30 g
                   ${
-                    manual
-                      ? "🍗 Distribution manuelle"
-                      : "✅ Repas programmé"
+                    grams >= 30
+                      ? "✅"
+                      : ""
+                  }
+                </span>
+
+              </div>
+
+
+              <div class="history-progress">
+
+                <div
+                  style="width:${foodPct}%"
+                ></div>
+
+              </div>
+
+
+              <div class="meal-times">
+                ${
+                  mealTimes
+                    || "Aucune distribution"
+                }
+              </div>
+
+            </div>
+
+
+            <div class="history-goal">
+
+              <div class="history-goal-header">
+
+                <strong>
+                  💧 ${drinks} prise${
+                    drinks === 1
+                      ? ""
+                      : "s"
                   }
                 </strong>
 
-                <small>
-                  ${formatDate(event.event_time)}
-                  ·
-                  ${formatTime(event.event_time)}
-                </small>
+                <span>
+                  ${ml}/100 ml
+                  ${
+                    ml >= 100
+                      ? "✅"
+                      : ""
+                  }
+                </span>
+
               </div>
 
-              <strong>
-                ${event.actual_grams ?? 0} g
-              </strong>
+
+              <div
+                class="history-progress water"
+              >
+
+                <div
+                  style="width:${waterPct}%"
+                ></div>
+
+              </div>
 
             </div>
-          `;
-        }
-      )
-      .join("");
+
+          </article>
+        `;
+      }
+    )
+    .join("");
 }
 
 
-/* ============================================================
+/* =========================================================
    HEALTH
-============================================================ */
+========================================================= */
 
 async function loadHealth() {
-
-  /* poids */
 
   const {
     data: weights
   } =
     await supabaseClient
-      .from("weight_entries")
+      .from(
+        "weight_entries"
+      )
       .select("*")
       .order(
         "measured_at",
         {
           ascending: false
         }
-      )
-      .limit(10);
+      );
 
 
-  document.getElementById(
-    "health-current-weight"
-  ).textContent =
-    weights?.length
-      ? `${weights[0].weight_kg} kg`
-      : "Aucune mesure";
+  document
+    .getElementById(
+      "health-current-weight"
+    )
+    .textContent =
+      weights?.length
+        ? `${weights[0].weight_kg} kg`
+        : "Aucune mesure";
 
 
-  document.getElementById(
-    "weight-history"
-  ).innerHTML =
-    weights?.length
-      ? weights
+  document
+    .getElementById(
+      "weight-history"
+    )
+    .innerHTML =
+      weights?.length
+        ? weights
+          .slice(0,10)
           .map(
-            weight => `
+            w => `
               <div class="health-row">
-
                 <span>
                   ${formatDate(
-                    weight.measured_at
+                    w.measured_at
                   )}
                 </span>
 
                 <strong>
-                  ${weight.weight_kg} kg
+                  ${w.weight_kg} kg
                 </strong>
-
               </div>
             `
           )
           .join("")
-      : `<div class="health-row">
-          <span>Aucune donnée</span>
-        </div>`;
+        : "Aucune donnée";
 
-
-  /* vaccins */
 
   const {
     data: vaccines
   } =
     await supabaseClient
-      .from("vaccinations")
+      .from(
+        "vaccinations"
+      )
       .select("*")
       .order(
         "vaccination_date",
@@ -988,32 +1491,34 @@ async function loadHealth() {
       );
 
 
-  document.getElementById(
-    "vaccination-list"
-  ).innerHTML =
-    vaccines?.length
-      ? vaccines
+  document
+    .getElementById(
+      "vaccination-list"
+    )
+    .innerHTML =
+      vaccines?.length
+        ? vaccines
           .map(
-            vaccine => `
+            v => `
               <div class="health-row">
 
                 <div>
                   <strong>
-                    ${vaccine.vaccine_name}
+                    ${v.vaccine_name}
                   </strong>
 
                   <small>
                     ${formatDate(
-                      vaccine.vaccination_date
+                      v.vaccination_date
                     )}
                   </small>
                 </div>
 
                 <small>
                   ${
-                    vaccine.next_due_date
+                    v.next_due_date
                       ? `Rappel ${formatDate(
-                          vaccine.next_due_date
+                          v.next_due_date
                         )}`
                       : ""
                   }
@@ -1023,18 +1528,16 @@ async function loadHealth() {
             `
           )
           .join("")
-      : `<div class="health-row">
-          Aucun vaccin renseigné
-        </div>`;
+        : "Aucun vaccin";
 
-
-  /* traitements */
 
   const {
     data: treatments
   } =
     await supabaseClient
-      .from("treatments")
+      .from(
+        "treatments"
+      )
       .select("*")
       .order(
         "administered_at",
@@ -1044,28 +1547,30 @@ async function loadHealth() {
       );
 
 
-  document.getElementById(
-    "treatment-list"
-  ).innerHTML =
-    treatments?.length
-      ? treatments
+  document
+    .getElementById(
+      "treatment-list"
+    )
+    .innerHTML =
+      treatments?.length
+        ? treatments
           .map(
-            treatment => `
+            t => `
               <div class="health-row">
 
                 <div>
                   <strong>
-                    ${treatment.treatment_type}
+                    ${t.treatment_type}
                   </strong>
 
                   <small>
-                    ${treatment.product_name || ""}
+                    ${t.product_name || ""}
                   </small>
                 </div>
 
                 <small>
                   ${formatDate(
-                    treatment.administered_at
+                    t.administered_at
                   )}
                 </small>
 
@@ -1073,15 +1578,13 @@ async function loadHealth() {
             `
           )
           .join("")
-      : `<div class="health-row">
-          Aucun traitement renseigné
-        </div>`;
+        : "Aucun traitement";
 }
 
 
-/* ============================================================
+/* =========================================================
    MODALS
-============================================================ */
+========================================================= */
 
 document
   .querySelectorAll(
@@ -1116,22 +1619,16 @@ document
 
       button.addEventListener(
         "click",
-        () => {
-
+        () =>
           button
             .closest(".modal")
             .classList.add(
               "hidden"
-            );
-        }
+            )
       );
     }
   );
 
-
-/* ============================================================
-   SAVE WEIGHT
-============================================================ */
 
 document
   .getElementById(
@@ -1141,7 +1638,7 @@ document
     "click",
     async () => {
 
-      const weight =
+      const value =
         parseFloat(
           document
             .getElementById(
@@ -1151,44 +1648,26 @@ document
         );
 
 
-      const notes =
-        document
-          .getElementById(
-            "weight-note"
-          )
-          .value;
-
-
-      if (!weight) {
+      if (!value) {
         return;
       }
 
 
-      const { error } =
-        await supabaseClient
-          .from(
-            "weight_entries"
-          )
-          .insert(
-            {
-              weight_kg:
-                weight,
+      await supabaseClient
+        .from(
+          "weight_entries"
+        )
+        .insert({
+          weight_kg:
+            value,
 
-              notes:
-                notes || null
-            }
-          );
-
-
-      if (error) {
-
-        alert(
-          "Erreur : " +
-          error.message
-        );
-
-        return;
-      }
+          notes:
+            document
+              .getElementById(
+                "weight-note"
+              )
+              .value || null
+        });
 
 
       document
@@ -1205,10 +1684,6 @@ document
     }
   );
 
-
-/* ============================================================
-   SAVE VACCINE
-============================================================ */
 
 document
   .getElementById(
@@ -1234,14 +1709,6 @@ document
           .value;
 
 
-      const next =
-        document
-          .getElementById(
-            "vaccine-next"
-          )
-          .value;
-
-
       if (
         !name ||
         !date
@@ -1250,34 +1717,26 @@ document
       }
 
 
-      const { error } =
-        await supabaseClient
-          .from(
-            "vaccinations"
-          )
-          .insert(
-            {
-              vaccine_name:
-                name,
+      await supabaseClient
+        .from(
+          "vaccinations"
+        )
+        .insert({
 
-              vaccination_date:
-                date,
+          vaccine_name:
+            name,
 
-              next_due_date:
-                next || null
-            }
-          );
+          vaccination_date:
+            date,
 
-
-      if (error) {
-
-        alert(
-          "Erreur : " +
-          error.message
-        );
-
-        return;
-      }
+          next_due_date:
+            document
+              .getElementById(
+                "vaccine-next"
+              )
+              .value
+              || null
+        });
 
 
       document
@@ -1295,10 +1754,6 @@ document
   );
 
 
-/* ============================================================
-   SAVE TREATMENT
-============================================================ */
-
 document
   .getElementById(
     "save-treatment"
@@ -1306,22 +1761,6 @@ document
   .addEventListener(
     "click",
     async () => {
-
-      const type =
-        document
-          .getElementById(
-            "treatment-type"
-          )
-          .value;
-
-
-      const product =
-        document
-          .getElementById(
-            "treatment-product"
-          )
-          .value;
-
 
       const date =
         document
@@ -1331,50 +1770,43 @@ document
           .value;
 
 
-      const next =
-        document
-          .getElementById(
-            "treatment-next"
-          )
-          .value;
-
-
       if (!date) {
         return;
       }
 
 
-      const { error } =
-        await supabaseClient
-          .from(
-            "treatments"
-          )
-          .insert(
-            {
-              treatment_type:
-                type,
+      await supabaseClient
+        .from(
+          "treatments"
+        )
+        .insert({
 
-              product_name:
-                product || null,
+          treatment_type:
+            document
+              .getElementById(
+                "treatment-type"
+              )
+              .value,
 
-              administered_at:
-                date,
+          product_name:
+            document
+              .getElementById(
+                "treatment-product"
+              )
+              .value
+              || null,
 
-              next_due_date:
-                next || null
-            }
-          );
+          administered_at:
+            date,
 
-
-      if (error) {
-
-        alert(
-          "Erreur : " +
-          error.message
-        );
-
-        return;
-      }
+          next_due_date:
+            document
+              .getElementById(
+                "treatment-next"
+              )
+              .value
+              || null
+        });
 
 
       document
@@ -1391,9 +1823,9 @@ document
   );
 
 
-/* ============================================================
+/* =========================================================
    INIT
-============================================================ */
+========================================================= */
 
 async function initialize() {
 
@@ -1402,52 +1834,90 @@ async function initialize() {
       session
     }
   } =
-    await supabaseClient.auth
+    await supabaseClient
+      .auth
       .getSession();
 
 
   if (!session) {
 
-    loginScreen.classList
-      .remove("hidden");
+    dashboard.classList.add(
+      "hidden"
+    );
 
-    dashboard.classList
-      .add("hidden");
+    passwordScreen
+      .classList.add(
+        "hidden"
+      );
+
+    loginScreen
+      .classList.remove(
+        "hidden"
+      );
 
     return;
   }
 
 
-  loginScreen.classList
-    .add("hidden");
-
-  dashboard.classList
-    .remove("hidden");
+  loginScreen.classList.add(
+    "hidden"
+  );
 
 
-  try {
+  passwordScreen.classList.add(
+    "hidden"
+  );
 
-    await loadHome();
 
-  } catch (error) {
+  dashboard.classList.remove(
+    "hidden"
+  );
 
-    console.error(
-      error
-    );
 
-    document.getElementById(
-      "health-message"
-    ).textContent =
-      "Données indisponibles ⚠️";
-  }
+  await loadHome();
 }
 
 
 supabaseClient.auth
   .onAuthStateChange(
-    () => initialize()
+    (
+      event,
+      session
+    ) => {
+
+      if (
+        event ===
+        "PASSWORD_RECOVERY"
+      ) {
+
+        loginScreen
+          .classList.add(
+            "hidden"
+          );
+
+        dashboard
+          .classList.add(
+            "hidden"
+          );
+
+        passwordScreen
+          .classList.remove(
+            "hidden"
+          );
+
+        return;
+      }
+
+
+      if (
+        event ===
+        "SIGNED_IN"
+      ) {
+
+        initialize();
+      }
+    }
   );
 
 
-initialize();
 initialize();
