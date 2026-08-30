@@ -2746,3 +2746,86 @@ setInterval(
 
   60 * 1000
 );
+
+
+// =========================================================
+// FEEDER ACTION SHEET
+// =========================================================
+
+const feederCard =
+  document.getElementById(
+    "feeder-card"
+  );
+
+const feederActionsModal =
+  document.getElementById(
+    "feeder-actions-modal"
+  );
+
+const closeFeederActions =
+  document.getElementById(
+    "close-feeder-actions"
+  );
+
+
+if (
+  feederCard &&
+  feederActionsModal
+) {
+
+  feederCard.addEventListener(
+    "click",
+    () => {
+
+      feederActionsModal
+        .classList.remove(
+          "hidden"
+        );
+    }
+  );
+}
+
+
+if (
+  closeFeederActions &&
+  feederActionsModal
+) {
+
+  closeFeederActions.addEventListener(
+    "click",
+    () => {
+
+      feederActionsModal
+        .classList.add(
+          "hidden"
+        );
+    }
+  );
+}
+
+
+/*
+ * Clic sur le fond sombre
+ * = fermeture.
+ */
+if (
+  feederActionsModal
+) {
+
+  feederActionsModal.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target
+        === feederActionsModal
+      ) {
+
+        feederActionsModal
+          .classList.add(
+            "hidden"
+          );
+      }
+    }
+  );
+}
