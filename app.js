@@ -2324,21 +2324,12 @@ async function loadHealth() {
         .destroy();
     }
 
-
     const labels =
       weights.map(
         weight =>
-          new Date(
-            `${weight.measured_at}T12:00:00`
+          formatDate(
+            weight.measured_at
           )
-            .toLocaleDateString(
-              "fr-FR",
-              {
-                day: "2-digit",
-                month: "2-digit",
-                year: "2-digit"
-              }
-            )
       );
 
 
