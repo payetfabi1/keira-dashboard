@@ -4,8 +4,13 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
   "sb_publishable_qLhvGcHGqkaHMEj_giw1Ww_e3J_RoKR";
 
+
 const FOOD_GOAL = 30;
 const FOOD_DOSES_GOAL = 3;
+
+const WET_FOOD_GOAL = 50;
+const WET_FOOD_TIME = 19;
+
 const WATER_GOAL = 100;
 
 
@@ -18,9 +23,7 @@ const supabaseClient =
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
-
-        storage:
-          window.localStorage
+        storage: window.localStorage
       }
     }
   );
@@ -46,27 +49,33 @@ const dashboard =
    HELPERS
 ========================================================= */
 
-function parisDay(date = new Date()) {
+function parisDay(
+  date = new Date()
+) {
 
   return date.toLocaleDateString(
     "en-CA",
     {
-      timeZone: "Europe/Paris"
+      timeZone:
+        "Europe/Paris"
     }
   );
 }
 
 
-function formatDate(value) {
+function formatDate(
+  value
+) {
 
   if (!value) {
     return "—";
   }
 
-  return new Date(value)
-    .toLocaleDateString(
-      "fr-FR"
-    );
+  return new Date(
+    value
+  ).toLocaleDateString(
+    "fr-FR"
+  );
 }
 
 
@@ -77,11 +86,17 @@ function percent(
 
   return Math.min(
     100,
-    Math.round(
-      (
-        Number(value || 0)
-        / goal
-      ) * 100
+    Math.max(
+      0,
+      Math.round(
+        (
+          Number(
+            value || 0
+          )
+          / goal
+        )
+        * 100
+      )
     )
   );
 }
@@ -95,81 +110,67 @@ function daysAgo(
     return null;
   }
 
-  const now =
-    Date.now();
+
+  const numericTimestamp =
+    Number(timestamp);
+
+
+  if (
+    Number.isNaN(
+      numericTimestamp
+    )
+  ) {
+    return null;
+  }
+
 
   const diff =
-    now -
-    Number(timestamp);
+    Date.now()
+    - numericTimestamp;
+
 
   return Math.max(
     0,
     Math.floor(
-      diff /
-      86400000
+      diff
+      / 86400000
     )
   );
 }
 
 
-function daysText(days) {
+function daysText(
+  days
+) {
 
   if (days === 0) {
     return "aujourd'hui";
   }
 
+
   if (days === 1) {
     return "hier";
   }
+
 
   return `il y a ${days} jours`;
 }
 
 
-function wifiClass(
-  rssi,
-  online
+function showPage(
+  pageName
 ) {
 
-  if (!online) {
-    return "offline";
-  }
-
-  if (rssi >= -60) {
-    return "good";
-  }
-
-  if (rssi >= -72) {
-    return "medium";
-  }
-
-  return "bad";
-}
-
-
-function wifiLabel(rssi) {
-
-  if (rssi >= -60) {
-    return "Wi-Fi excellent";
-  }
-
-  if (rssi >= -72) {
-    return "Wi-Fi moyen";
-  }
-
-  return "Wi-Fi faible";
-}
-
-
-function showPage(pageName) {
-
   document
-    .querySelectorAll(".page")
+    .querySelectorAll(
+      ".page"
+    )
     .forEach(
-      page =>
+      page => {
         page.classList.add(
           "hidden"
-        )
+        );
+      }
     );
 
 
@@ -187,10 +188,11 @@ function showPage(pageName) {
       ".nav-button"
     )
     .forEach(
-      button =>
+      button => {
         button.classList.remove(
           "active"
-        )
+        );
+      }
     );
 
 
@@ -214,22 +216,26 @@ function showPage(pageName) {
 
 
   if (
-    pageName === "history"
+    pageName ===
+    "history"
   ) {
+
     loadHistory();
   }
 
 
   if (
-    pageName === "health"
+    pageName ===
+    "health"
   ) {
+
     loadHealth();
   }
 }
 
 
 /* =========================================================
-   AUTH PASSWORD
+   AUTH
 ========================================================= */
 
 document
@@ -264,8 +270,8 @@ document
 
 
       if (
-        !email ||
-        !password
+        !email
+        || !password
       ) {
 
         message.textContent =
@@ -303,7 +309,7 @@ document
       message.textContent =
         "";
 
-      initialize();
+      await initialize();
     }
   );
 
@@ -446,7 +452,7 @@ document
 
 
 /* =========================================================
-   NAV
+   NAVIGATION
 ========================================================= */
 
 document
@@ -458,10 +464,12 @@ document
 
       element.addEventListener(
         "click",
-        () =>
+        () => {
+
           showPage(
             element.dataset.page
-          )
+          );
+        }
       );
     }
   );
@@ -520,9 +528,9 @@ function setDevice(
     );
 
 
-  const wifi =
+  const dot =
     document.getElementById(
-      `${prefix}-wifi`
+      `${prefix}-dot`
     );
 
 
@@ -531,8 +539,8 @@ function setDevice(
     status.textContent =
       "Données indisponibles";
 
-    wifi.className =
-      "wifi offline";
+    dot.className =
+      "device-state-dot";
 
     return;
   }
@@ -541,31 +549,21 @@ function setDevice(
   if (!device.online) {
 
     status.textContent =
-      "🔴 Hors ligne";
+      "Hors ligne";
 
-    wifi.className =
-      "wifi offline";
+    dot.className =
+      "device-state-dot offline";
 
     return;
   }
 
 
   status.textContent =
-    "🟢 En ligne";
+    "En ligne";
 
 
-  wifi.className =
-    "wifi "
-    + wifiClass(
-      device.wifi_rssi,
-      device.online
-    );
-
-
-  wifi.title =
-    wifiLabel(
-      device.wifi_rssi
-    );
+  dot.className =
+    "device-state-dot online";
 
 
   if (
@@ -587,8 +585,25 @@ function setDevice(
     prefix === "fountain"
   ) {
 
-    const waterPercent =
+    let waterPercent =
       device.water_percent;
+
+
+    if (
+      waterPercent != null
+    ) {
+
+      waterPercent =
+        Math.min(
+          100,
+          Math.max(
+            0,
+            Number(
+              waterPercent
+            )
+          )
+        );
+    }
 
 
     document
@@ -613,11 +628,13 @@ function maintenanceHTML(
 ) {
 
   const rawFountain =
-    fountain?.raw_data || {};
+    fountain?.raw_data
+    || {};
 
 
   const rawFeeder =
-    feeder?.raw_data || {};
+    feeder?.raw_data
+    || {};
 
 
   const filterAge =
@@ -634,9 +651,11 @@ function maintenanceHTML(
     );
 
 
-  const desiccantRemaining =
-    feeder
-      ?.desiccant_days_remaining;
+  const feederFilterAge =
+    daysAgo(
+      rawFeeder
+        .changeDesiccantTime
+    );
 
 
   const rows = [];
@@ -660,18 +679,27 @@ function maintenanceHTML(
         </span>
 
         <div>
-          <strong>Filtre fontaine</strong>
+
+          <strong>
+            Filtre fontaine
+          </strong>
 
           <small>
-            Changé ${
-              daysText(filterAge)
-            }
+            Changé ${daysText(filterAge)}
             ${
               filterAge >= 12
-                ? ` · changement tous les 15 jours`
+              && filterAge < 15
+                ? " · à changer bientôt"
+                : ""
+            }
+
+            ${
+              filterAge >= 15
+                ? " · à changer"
                 : ""
             }
           </small>
+
         </div>
 
       </div>
@@ -697,13 +725,27 @@ function maintenanceHTML(
         </span>
 
         <div>
-          <strong>Nettoyage fontaine</strong>
+
+          <strong>
+            Nettoyage fontaine
+          </strong>
 
           <small>
-            Fait ${
-              daysText(cleaningAge)
+            Fait ${daysText(cleaningAge)}
+            ${
+              cleaningAge >= 12
+              && cleaningAge < 15
+                ? " · à refaire bientôt"
+                : ""
+            }
+
+            ${
+              cleaningAge >= 15
+                ? " · à refaire"
+                : ""
             }
           </small>
+
         </div>
 
       </div>
@@ -712,7 +754,7 @@ function maintenanceHTML(
 
 
   if (
-    desiccantRemaining != null
+    feederFilterAge != null
   ) {
 
     rows.push(`
@@ -720,25 +762,34 @@ function maintenanceHTML(
 
         <span class="maintenance-icon">
           ${
-            desiccantRemaining < 0
-              ? "🔴"
-              : desiccantRemaining <= 3
+            feederFilterAge < 12
+              ? "✅"
+              : feederFilterAge < 15
               ? "🟠"
-              : "✅"
+              : "🔴"
           }
         </span>
 
         <div>
 
           <strong>
-            Dessiccant
+            Filtre croquettes
           </strong>
 
           <small>
+            Changé ${daysText(feederFilterAge)}
+
             ${
-              desiccantRemaining < 0
-                ? "À remplacer"
-                : `Encore ${desiccantRemaining} jour(s)`
+              feederFilterAge >= 12
+              && feederFilterAge < 15
+                ? " · à changer bientôt"
+                : ""
+            }
+
+            ${
+              feederFilterAge >= 15
+                ? " · à changer"
+                : ""
             }
           </small>
 
@@ -749,7 +800,9 @@ function maintenanceHTML(
   }
 
 
-  return rows.join("");
+  return rows.length
+    ? rows.join("")
+    : "✅ Rien à prévoir";
 }
 
 
@@ -763,10 +816,13 @@ async function loadHome() {
     parisDay();
 
 
-  /* FOOD */
+  /* =======================================================
+     CROQUETTES
+  ======================================================= */
 
   const {
-    data: feeding
+    data: feeding,
+    error: feedingError
   } =
     await supabaseClient
       .from(
@@ -785,15 +841,28 @@ async function loadHome() {
       );
 
 
+  if (
+    feedingError
+  ) {
+
+    console.error(
+      "feeding_events:",
+      feedingError
+    );
+  }
+
+
   const todayFood =
     (feeding || [])
       .filter(
-        e =>
-          parisDay(
+        event => {
+
+          return parisDay(
             new Date(
-              e.event_time
+              event.event_time
             )
-          ) === today
+          ) === today;
+        }
       );
 
 
@@ -802,11 +871,16 @@ async function loadHome() {
       (
         sum,
         event
-      ) =>
-        sum +
-        Number(
-          event.actual_grams || 0
-        ),
+      ) => {
+
+        return (
+          sum
+          + Number(
+            event.actual_grams
+            || 0
+          )
+        );
+      },
       0
     );
 
@@ -841,13 +915,192 @@ async function loadHome() {
     .textContent =
       totalFood >= FOOD_GOAL
         ? "✅ Objectif atteint"
-        : `${FOOD_GOAL - totalFood} g restants`;
+        : `${Math.max(
+            0,
+            FOOD_GOAL
+            - totalFood
+          )} g restants`;
 
 
-  /* WATER */
+  /* =======================================================
+     PATEE
+  ======================================================= */
 
   const {
-    data: waterRows
+    data: wetFoodRows,
+    error: wetFoodError
+  } =
+    await supabaseClient
+      .from(
+        "wet_food_entries"
+      )
+      .select("*")
+      .eq(
+        "day",
+        today
+      )
+      .order(
+        "given_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(1);
+
+
+  if (
+    wetFoodError
+  ) {
+
+    console.error(
+      "wet_food_entries:",
+      wetFoodError
+    );
+  }
+
+
+  const wetFood =
+    wetFoodRows?.[0];
+
+
+  const wetFoodGrams =
+    Number(
+      wetFood?.grams
+      || 0
+    );
+
+
+  document
+    .getElementById(
+      "wet-food-current"
+    )
+    .textContent =
+      `${wetFoodGrams} g`;
+
+
+  updateGoal(
+    "wet-food",
+    wetFoodGrams,
+    WET_FOOD_GOAL
+  );
+
+
+  const wetButton =
+    document.getElementById(
+      "confirm-wet-food"
+    );
+
+
+  const wetState =
+    document.getElementById(
+      "wet-food-state"
+    );
+
+
+  const wetTime =
+    document.getElementById(
+      "wet-food-time"
+    );
+
+
+  if (
+    wetFood
+  ) {
+
+    const givenAt =
+      new Date(
+        wetFood.given_at
+      );
+
+
+    const timeText =
+      givenAt
+        .toLocaleTimeString(
+          "fr-FR",
+          {
+            hour: "2-digit",
+            minute: "2-digit",
+            timeZone:
+              "Europe/Paris"
+          }
+        );
+
+
+    wetState.textContent =
+      "✅ Objectif atteint";
+
+
+    wetTime.textContent =
+      `Donnée à ${timeText}`;
+
+
+    wetButton.textContent =
+      "✅ Pâtée donnée";
+
+
+    wetButton.disabled =
+      true;
+
+
+    wetButton.className =
+      "wet-food-button done";
+
+  } else {
+
+    const parisHour =
+      Number(
+        new Intl
+          .DateTimeFormat(
+            "fr-FR",
+            {
+              timeZone:
+                "Europe/Paris",
+
+              hour:
+                "2-digit",
+
+              hour12:
+                false
+            }
+          )
+          .format(
+            new Date()
+          )
+      );
+
+
+    wetState.textContent =
+      parisHour >= WET_FOOD_TIME
+        ? "🥫 À donner"
+        : "Prévue à 19:00";
+
+
+    wetTime.textContent =
+      "";
+
+
+    wetButton.disabled =
+      false;
+
+
+    wetButton.textContent =
+      "🥫 Pâtée donnée · 50 g";
+
+
+    wetButton.className =
+      parisHour >= WET_FOOD_TIME
+        ? "wet-food-button due"
+        : "wet-food-button";
+  }
+
+
+  /* =======================================================
+     EAU
+  ======================================================= */
+
+  const {
+    data: waterRows,
+    error: waterError
   } =
     await supabaseClient
       .from(
@@ -861,19 +1114,32 @@ async function loadHome() {
       .limit(1);
 
 
+  if (
+    waterError
+  ) {
+
+    console.error(
+      "water_daily:",
+      waterError
+    );
+  }
+
+
   const water =
     waterRows?.[0];
 
 
   const waterMl =
     Number(
-      water?.total_ml || 0
+      water?.total_ml
+      || 0
     );
 
 
   const waterVisits =
     Number(
-      water?.drink_times || 0
+      water?.drink_times
+      || 0
     );
 
 
@@ -911,10 +1177,16 @@ async function loadHome() {
     .textContent =
       waterMl >= WATER_GOAL
         ? "✅ Objectif atteint"
-        : `${WATER_GOAL - waterMl} ml restants`;
+        : `${Math.max(
+            0,
+            WATER_GOAL
+            - waterMl
+          )} ml restants`;
 
 
-  /* WEIGHT */
+  /* =======================================================
+     POIDS
+  ======================================================= */
 
   const {
     data: weights
@@ -957,7 +1229,9 @@ async function loadHome() {
   }
 
 
-  /* VACCINES */
+  /* =======================================================
+     VACCINS
+  ======================================================= */
 
   const {
     data: vaccines
@@ -989,8 +1263,8 @@ async function loadHome() {
 
     const next =
       vaccines.find(
-        v =>
-          v.next_due_date
+        vaccine =>
+          vaccine.next_due_date
       );
 
 
@@ -1007,10 +1281,13 @@ async function loadHome() {
   }
 
 
-  /* DEVICES */
+  /* =======================================================
+     DEVICES
+  ======================================================= */
 
   const {
-    data: devices
+    data: devices,
+    error: devicesError
   } =
     await supabaseClient
       .from(
@@ -1026,18 +1303,29 @@ async function loadHome() {
       .limit(20);
 
 
+  if (
+    devicesError
+  ) {
+
+    console.error(
+      "device_status:",
+      devicesError
+    );
+  }
+
+
   const feeder =
     devices?.find(
-      d =>
-        d.device_model
+      device =>
+        device.device_model
         === "PLAF203"
     );
 
 
   const fountain =
     devices?.find(
-      d =>
-        d.device_model
+      device =>
+        device.device_model
         === "PLWF105"
     );
 
@@ -1065,9 +1353,15 @@ async function loadHome() {
       );
 
 
+  /* =======================================================
+     GLOBAL STATE
+  ======================================================= */
+
   const allOK =
-    feeder?.online &&
-    fountain?.online;
+    Boolean(
+      feeder?.online
+      && fountain?.online
+    );
 
 
   const global =
@@ -1107,11 +1401,8 @@ async function loadHome() {
         .toLocaleTimeString(
           "fr-FR",
           {
-            hour:
-              "2-digit",
-
-            minute:
-              "2-digit"
+            hour: "2-digit",
+            minute: "2-digit"
           }
         );
 }
@@ -1136,15 +1427,21 @@ function last7Days() {
   ) {
 
     const date =
-      new Date(now);
+      new Date(
+        now
+      );
+
 
     date.setDate(
-      now.getDate() - i
+      now.getDate()
+      - i
     );
 
 
     days.push(
-      parisDay(date)
+      parisDay(
+        date
+      )
     );
   }
 
@@ -1157,6 +1454,12 @@ async function loadHistory() {
 
   const days =
     last7Days();
+
+
+  const oldestDay =
+    days[
+      days.length - 1
+    ];
 
 
   const {
@@ -1189,9 +1492,27 @@ async function loadHistory() {
       .select("*")
       .gte(
         "day",
-        days[
-          days.length - 1
-        ]
+        oldestDay
+      );
+
+
+  const {
+    data: wetFood
+  } =
+    await supabaseClient
+      .from(
+        "wet_food_entries"
+      )
+      .select("*")
+      .gte(
+        "day",
+        oldestDay
+      )
+      .order(
+        "day",
+        {
+          ascending: false
+        }
       );
 
 
@@ -1202,217 +1523,357 @@ async function loadHistory() {
 
 
   container.innerHTML =
-    days.map(
-      (
-        day,
-        index
-      ) => {
+    days
+      .map(
+        (
+          day,
+          index
+        ) => {
 
-        const foodEvents =
-          (feeding || [])
-            .filter(
-              e =>
-                parisDay(
-                  new Date(
-                    e.event_time
-                  )
-                )
-                === day
-            );
+          const foodEvents =
+            (feeding || [])
+              .filter(
+                event => {
 
-
-        const grams =
-          foodEvents.reduce(
-            (
-              sum,
-              e
-            ) =>
-              sum +
-              Number(
-                e.actual_grams || 0
-              ),
-            0
-          );
-
-
-        const waterRow =
-          water?.find(
-            w =>
-              w.day === day
-          );
-
-
-        const ml =
-          Number(
-            waterRow
-              ?.total_ml || 0
-          );
-
-
-        const drinks =
-          Number(
-            waterRow
-              ?.drink_times || 0
-          );
-
-
-        const foodPct =
-          percent(
-            grams,
-            FOOD_GOAL
-          );
-
-
-        const waterPct =
-          percent(
-            ml,
-            WATER_GOAL
-          );
-
-
-        const label =
-          index === 0
-            ? "Aujourd'hui"
-            : index === 1
-            ? "Hier"
-            : new Date(
-                `${day}T12:00:00`
-              )
-              .toLocaleDateString(
-                "fr-FR",
-                {
-                  weekday:
-                    "long",
-
-                  day:
-                    "numeric",
-
-                  month:
-                    "short"
+                  return (
+                    parisDay(
+                      new Date(
+                        event.event_time
+                      )
+                    )
+                    === day
+                  );
                 }
               );
 
 
-        const mealTimes =
-          foodEvents
-            .map(
-              e =>
-                new Date(
-                  e.event_time
+          const grams =
+            foodEvents
+              .reduce(
+                (
+                  sum,
+                  event
+                ) => {
+
+                  return (
+                    sum
+                    + Number(
+                      event.actual_grams
+                      || 0
+                    )
+                  );
+                },
+                0
+              );
+
+
+          const waterRow =
+            water?.find(
+              item =>
+                item.day === day
+            );
+
+
+          const ml =
+            Number(
+              waterRow
+                ?.total_ml
+              || 0
+            );
+
+
+          const drinks =
+            Number(
+              waterRow
+                ?.drink_times
+              || 0
+            );
+
+
+          const wetFoodRow =
+            wetFood?.find(
+              item =>
+                item.day === day
+            );
+
+
+          const wetGrams =
+            Number(
+              wetFoodRow
+                ?.grams
+              || 0
+            );
+
+
+          const foodPct =
+            percent(
+              grams,
+              FOOD_GOAL
+            );
+
+
+          const wetPct =
+            percent(
+              wetGrams,
+              WET_FOOD_GOAL
+            );
+
+
+          const waterPct =
+            percent(
+              ml,
+              WATER_GOAL
+            );
+
+
+          const label =
+            index === 0
+              ? "Aujourd'hui"
+
+              : index === 1
+              ? "Hier"
+
+              : new Date(
+                  `${day}T12:00:00`
                 )
-                .toLocaleTimeString(
+                .toLocaleDateString(
                   "fr-FR",
                   {
-                    hour:
-                      "2-digit",
+                    weekday:
+                      "long",
 
-                    minute:
-                      "2-digit",
+                    day:
+                      "numeric",
 
-                    timeZone:
-                      "Europe/Paris"
+                    month:
+                      "short"
                   }
-                )
-            )
-            .join(" · ");
+                );
 
 
-        return `
-          <article class="day-card">
+          const mealTimes =
+            foodEvents
+              .map(
+                event => {
 
-            <div class="day-title">
+                  const time =
+                    new Date(
+                      event.event_time
+                    )
+                    .toLocaleTimeString(
+                      "fr-FR",
+                      {
+                        hour:
+                          "2-digit",
 
-              <strong>
-                ${label}
-              </strong>
+                        minute:
+                          "2-digit",
 
-              <small>
-                ${day}
-              </small>
-
-            </div>
-
-
-            <div class="history-goal">
-
-              <div class="history-goal-header">
-
-                <strong>
-                  🍗 ${foodEvents.length}/3 doses
-                </strong>
-
-                <span>
-                  ${grams}/30 g
-                  ${
-                    grams >= 30
-                      ? "✅"
-                      : ""
-                  }
-                </span>
-
-              </div>
+                        timeZone:
+                          "Europe/Paris"
+                      }
+                    );
 
 
-              <div class="history-progress">
-
-                <div
-                  style="width:${foodPct}%"
-                ></div>
-
-              </div>
+                  const manual =
+                    event.event_type
+                    ===
+                    "MANUAL_FEEDING_SUCCESS";
 
 
-              <div class="meal-times">
-                ${
-                  mealTimes
-                    || "Aucune distribution"
+                  return manual
+                    ? `${time} manuel`
+                    : `${time} ✅`;
                 }
-              </div>
+              )
+              .join(" · ");
 
-            </div>
+
+          let wetGivenTime =
+            "";
 
 
-            <div class="history-goal">
+          if (
+            wetFoodRow?.given_at
+          ) {
 
-              <div class="history-goal-header">
+            wetGivenTime =
+              new Date(
+                wetFoodRow.given_at
+              )
+              .toLocaleTimeString(
+                "fr-FR",
+                {
+                  hour:
+                    "2-digit",
+
+                  minute:
+                    "2-digit",
+
+                  timeZone:
+                    "Europe/Paris"
+                }
+              );
+          }
+
+
+          return `
+            <article class="day-card">
+
+              <div class="day-title">
 
                 <strong>
-                  💧 ${drinks} prise${
-                    drinks === 1
-                      ? ""
-                      : "s"
-                  }
+                  ${label}
                 </strong>
 
-                <span>
-                  ${ml}/100 ml
-                  ${
-                    ml >= 100
-                      ? "✅"
-                      : ""
-                  }
-                </span>
+                <small>
+                  ${day}
+                </small>
 
               </div>
 
 
-              <div
-                class="history-progress water"
-              >
+              <!-- CROQUETTES -->
+
+              <div class="history-goal">
+
+                <div class="history-goal-header">
+
+                  <strong>
+                    🍗 ${foodEvents.length}/3 doses
+                  </strong>
+
+                  <span>
+                    ${grams}/30 g
+                    ${
+                      grams >= FOOD_GOAL
+                        ? "✅"
+                        : ""
+                    }
+                  </span>
+
+                </div>
+
+
+                <div class="history-progress">
+
+                  <div
+                    style="width:${foodPct}%"
+                  ></div>
+
+                </div>
+
+
+                <div class="meal-times">
+
+                  ${
+                    mealTimes
+                    || "Aucune distribution"
+                  }
+
+                </div>
+
+              </div>
+
+
+              <!-- PATEE -->
+
+              <div class="history-goal">
+
+                <div class="history-goal-header">
+
+                  <strong>
+                    🥫 Pâtée
+                  </strong>
+
+                  <span>
+                    ${wetGrams}/50 g
+                    ${
+                      wetGrams >=
+                      WET_FOOD_GOAL
+                        ? "✅"
+                        : ""
+                    }
+                  </span>
+
+                </div>
+
 
                 <div
-                  style="width:${waterPct}%"
-                ></div>
+                  class="history-progress wet-food"
+                >
+
+                  <div
+                    style="width:${wetPct}%"
+                  ></div>
+
+                </div>
+
+
+                <div
+                  class="wet-food-history-state"
+                >
+
+                  ${
+                    wetFoodRow
+
+                      ? `Donnée à ${wetGivenTime}`
+
+                      : index === 0
+
+                      ? "Prévue à 19:00"
+
+                      : "Non enregistrée"
+                  }
+
+                </div>
 
               </div>
 
-            </div>
 
-          </article>
-        `;
-      }
-    )
-    .join("");
+              <!-- WATER -->
+
+              <div class="history-goal">
+
+                <div class="history-goal-header">
+
+                  <strong>
+                    💧 ${drinks} prise${
+                      drinks === 1
+                        ? ""
+                        : "s"
+                    }
+                  </strong>
+
+                  <span>
+                    ${ml}/100 ml
+                    ${
+                      ml >= WATER_GOAL
+                        ? "✅"
+                        : ""
+                    }
+                  </span>
+
+                </div>
+
+
+                <div
+                  class="history-progress water"
+                >
+
+                  <div
+                    style="width:${waterPct}%"
+                  ></div>
+
+                </div>
+
+              </div>
+
+            </article>
+          `;
+        }
+      )
+      .join("");
 }
 
 
@@ -1421,6 +1882,8 @@ async function loadHistory() {
 ========================================================= */
 
 async function loadHealth() {
+
+  /* POIDS */
 
   const {
     data: weights
@@ -1454,26 +1917,42 @@ async function loadHealth() {
     )
     .innerHTML =
       weights?.length
-        ? weights
-          .slice(0,10)
-          .map(
-            w => `
-              <div class="health-row">
-                <span>
-                  ${formatDate(
-                    w.measured_at
-                  )}
-                </span>
 
-                <strong>
-                  ${w.weight_kg} kg
-                </strong>
-              </div>
-            `
+        ? weights
+          .slice(
+            0,
+            10
+          )
+          .map(
+            weight => {
+
+              return `
+                <div class="health-row">
+
+                  <span>
+                    ${formatDate(
+                      weight.measured_at
+                    )}
+                  </span>
+
+                  <strong>
+                    ${weight.weight_kg} kg
+                  </strong>
+
+                </div>
+              `;
+            }
           )
           .join("")
-        : "Aucune donnée";
 
+        : `
+          <div class="health-row">
+            Aucune donnée
+          </div>
+        `;
+
+
+  /* VACCINS */
 
   const {
     data: vaccines
@@ -1497,39 +1976,57 @@ async function loadHealth() {
     )
     .innerHTML =
       vaccines?.length
+
         ? vaccines
           .map(
-            v => `
-              <div class="health-row">
+            vaccine => {
 
-                <div>
-                  <strong>
-                    ${v.vaccine_name}
-                  </strong>
+              return `
+                <div class="health-row">
+
+                  <div>
+
+                    <strong>
+                      ${vaccine.vaccine_name}
+                    </strong>
+
+                    <small>
+                      ${formatDate(
+                        vaccine.vaccination_date
+                      )}
+                    </small>
+
+                  </div>
+
 
                   <small>
-                    ${formatDate(
-                      v.vaccination_date
-                    )}
+
+                    ${
+                      vaccine.next_due_date
+
+                        ? `Rappel ${formatDate(
+                            vaccine.next_due_date
+                          )}`
+
+                        : ""
+                    }
+
                   </small>
+
                 </div>
-
-                <small>
-                  ${
-                    v.next_due_date
-                      ? `Rappel ${formatDate(
-                          v.next_due_date
-                        )}`
-                      : ""
-                  }
-                </small>
-
-              </div>
-            `
+              `;
+            }
           )
           .join("")
-        : "Aucun vaccin";
 
+        : `
+          <div class="health-row">
+            Aucun vaccin
+          </div>
+        `;
+
+
+  /* TRAITEMENTS */
 
   const {
     data: treatments
@@ -1553,32 +2050,46 @@ async function loadHealth() {
     )
     .innerHTML =
       treatments?.length
+
         ? treatments
           .map(
-            t => `
-              <div class="health-row">
+            treatment => {
 
-                <div>
-                  <strong>
-                    ${t.treatment_type}
-                  </strong>
+              return `
+                <div class="health-row">
+
+                  <div>
+
+                    <strong>
+                      ${treatment.treatment_type}
+                    </strong>
+
+                    <small>
+                      ${treatment.product_name || ""}
+                    </small>
+
+                  </div>
+
 
                   <small>
-                    ${t.product_name || ""}
+
+                    ${formatDate(
+                      treatment.administered_at
+                    )}
+
                   </small>
+
                 </div>
-
-                <small>
-                  ${formatDate(
-                    t.administered_at
-                  )}
-                </small>
-
-              </div>
-            `
+              `;
+            }
           )
           .join("")
-        : "Aucun traitement";
+
+        : `
+          <div class="health-row">
+            Aucun traitement
+          </div>
+        `;
 }
 
 
@@ -1619,16 +2130,24 @@ document
 
       button.addEventListener(
         "click",
-        () =>
+        () => {
+
           button
-            .closest(".modal")
+            .closest(
+              ".modal"
+            )
             .classList.add(
               "hidden"
-            )
+            );
+        }
       );
     }
   );
 
+
+/* =========================================================
+   SAVE WEIGHT
+========================================================= */
 
 document
   .getElementById(
@@ -1653,21 +2172,38 @@ document
       }
 
 
-      await supabaseClient
-        .from(
-          "weight_entries"
-        )
-        .insert({
-          weight_kg:
-            value,
+      const {
+        error
+      } =
+        await supabaseClient
+          .from(
+            "weight_entries"
+          )
+          .insert({
+            weight_kg:
+              value,
 
-          notes:
-            document
-              .getElementById(
-                "weight-note"
-              )
-              .value || null
-        });
+            notes:
+              document
+                .getElementById(
+                  "weight-note"
+                )
+                .value
+              || null
+          });
+
+
+      if (
+        error
+      ) {
+
+        alert(
+          "Erreur : "
+          + error.message
+        );
+
+        return;
+      }
 
 
       document
@@ -1679,11 +2215,31 @@ document
         );
 
 
+      document
+        .getElementById(
+          "weight-input"
+        )
+        .value =
+          "";
+
+
+      document
+        .getElementById(
+          "weight-note"
+        )
+        .value =
+          "";
+
+
       await loadHealth();
       await loadHome();
     }
   );
 
+
+/* =========================================================
+   SAVE VACCINE
+========================================================= */
 
 document
   .getElementById(
@@ -1698,7 +2254,8 @@ document
           .getElementById(
             "vaccine-name"
           )
-          .value;
+          .value
+          .trim();
 
 
       const date =
@@ -1709,34 +2266,53 @@ document
           .value;
 
 
+      const next =
+        document
+          .getElementById(
+            "vaccine-next"
+          )
+          .value;
+
+
       if (
-        !name ||
-        !date
+        !name
+        || !date
       ) {
         return;
       }
 
 
-      await supabaseClient
-        .from(
-          "vaccinations"
-        )
-        .insert({
+      const {
+        error
+      } =
+        await supabaseClient
+          .from(
+            "vaccinations"
+          )
+          .insert({
+            vaccine_name:
+              name,
 
-          vaccine_name:
-            name,
+            vaccination_date:
+              date,
 
-          vaccination_date:
-            date,
-
-          next_due_date:
-            document
-              .getElementById(
-                "vaccine-next"
-              )
-              .value
+            next_due_date:
+              next
               || null
-        });
+          });
+
+
+      if (
+        error
+      ) {
+
+        alert(
+          "Erreur : "
+          + error.message
+        );
+
+        return;
+      }
 
 
       document
@@ -1753,6 +2329,10 @@ document
     }
   );
 
+
+/* =========================================================
+   SAVE TREATMENT
+========================================================= */
 
 document
   .getElementById(
@@ -1775,38 +2355,54 @@ document
       }
 
 
-      await supabaseClient
-        .from(
-          "treatments"
-        )
-        .insert({
+      const {
+        error
+      } =
+        await supabaseClient
+          .from(
+            "treatments"
+          )
+          .insert({
 
-          treatment_type:
-            document
-              .getElementById(
-                "treatment-type"
-              )
-              .value,
+            treatment_type:
+              document
+                .getElementById(
+                  "treatment-type"
+                )
+                .value,
 
-          product_name:
-            document
-              .getElementById(
-                "treatment-product"
-              )
-              .value
+            product_name:
+              document
+                .getElementById(
+                  "treatment-product"
+                )
+                .value
               || null,
 
-          administered_at:
-            date,
+            administered_at:
+              date,
 
-          next_due_date:
-            document
-              .getElementById(
-                "treatment-next"
-              )
-              .value
+            next_due_date:
+              document
+                .getElementById(
+                  "treatment-next"
+                )
+                .value
               || null
-        });
+          });
+
+
+      if (
+        error
+      ) {
+
+        alert(
+          "Erreur : "
+          + error.message
+        );
+
+        return;
+      }
 
 
       document
@@ -1819,6 +2415,150 @@ document
 
 
       await loadHealth();
+    }
+  );
+
+
+/* =========================================================
+   WET FOOD BUTTON
+========================================================= */
+
+document
+  .getElementById(
+    "confirm-wet-food"
+  )
+  .addEventListener(
+    "click",
+    async () => {
+
+      const button =
+        document.getElementById(
+          "confirm-wet-food"
+        );
+
+
+      if (
+        button.disabled
+      ) {
+        return;
+      }
+
+
+      button.disabled =
+        true;
+
+
+      button.textContent =
+        "Enregistrement...";
+
+
+      const today =
+        parisDay();
+
+
+      /*
+       * Vérification applicative
+       * avant insertion.
+       */
+
+      const {
+        data: existing,
+        error: checkError
+      } =
+        await supabaseClient
+          .from(
+            "wet_food_entries"
+          )
+          .select(
+            "id,given_at,grams"
+          )
+          .eq(
+            "day",
+            today
+          )
+          .limit(1);
+
+
+      if (
+        checkError
+      ) {
+
+        console.error(
+          checkError
+        );
+
+
+        alert(
+          "Impossible de vérifier la pâtée."
+        );
+
+
+        button.disabled =
+          false;
+
+
+        button.textContent =
+          "🥫 Pâtée donnée · 50 g";
+
+
+        return;
+      }
+
+
+      /*
+       * Déjà enregistrée aujourd'hui :
+       * aucun doublon.
+       */
+
+      if (
+        existing?.length
+      ) {
+
+        await loadHome();
+
+        return;
+      }
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from(
+            "wet_food_entries"
+          )
+          .insert({
+
+            day:
+              today,
+
+            grams:
+              WET_FOOD_GOAL
+          });
+
+
+      if (
+        error
+      ) {
+
+        /*
+         * L'index UNIQUE(day)
+         * constitue le deuxième
+         * garde-fou anti doublon.
+         */
+
+        console.error(
+          error
+        );
+
+
+        await loadHome();
+
+        return;
+      }
+
+
+      await loadHome();
     }
   );
 
@@ -1845,40 +2585,71 @@ async function initialize() {
       "hidden"
     );
 
+
     passwordScreen
       .classList.add(
         "hidden"
       );
+
 
     loginScreen
       .classList.remove(
         "hidden"
       );
 
+
     return;
   }
 
 
-  loginScreen.classList.add(
-    "hidden"
-  );
+  loginScreen
+    .classList.add(
+      "hidden"
+    );
 
 
-  passwordScreen.classList.add(
-    "hidden"
-  );
+  passwordScreen
+    .classList.add(
+      "hidden"
+    );
 
 
-  dashboard.classList.remove(
-    "hidden"
-  );
+  dashboard
+    .classList.remove(
+      "hidden"
+    );
 
 
-  await loadHome();
+  try {
+
+    await loadHome();
+
+  } catch (
+    error
+  ) {
+
+    console.error(
+      "Keira Dashboard:",
+      error
+    );
+
+
+    document
+      .getElementById(
+        "health-message"
+      )
+      .textContent =
+        "Données indisponibles ⚠️";
+  }
 }
 
 
-supabaseClient.auth
+/* =========================================================
+   AUTH EVENTS
+========================================================= */
+
+supabaseClient
+  .auth
   .onAuthStateChange(
     (
       event,
@@ -1895,15 +2666,18 @@ supabaseClient.auth
             "hidden"
           );
 
+
         dashboard
           .classList.add(
             "hidden"
           );
 
+
         passwordScreen
           .classList.remove(
             "hidden"
           );
+
 
         return;
       }
