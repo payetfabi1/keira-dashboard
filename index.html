@@ -457,34 +457,36 @@
 
       <section class="devices">
 
-        <article class="device">
-
+        <article
+          class="device clickable-device"
+          id="feeder-card"
+        >
+        
           <div class="device-icon">
             🍗
           </div>
-
+        
           <div class="device-main">
-
+        
             <strong>
               Machine Croquette
             </strong>
-
+        
             <small id="feeder-status">
               Chargement...
             </small>
-
+        
             <small
               id="feeder-extra"
               class="device-extra"
             ></small>
-
+        
           </div>
-
-          <span
-            id="feeder-dot"
-            class="device-state-dot"
-          ></span>
-
+        
+          <div class="device-action">
+            ›
+          </div>
+        
         </article>
 
 
@@ -959,6 +961,100 @@
   </div>
 
 
+  <!-- ===================================================== -->
+  <!-- FEEDER ACTIONS -->
+  <!-- ===================================================== -->
+  
+  <div
+    id="feeder-actions-modal"
+    class="action-sheet hidden"
+  >
+  
+    <div class="action-sheet-content">
+  
+      <div class="action-sheet-handle"></div>
+  
+      <div class="action-sheet-title">
+        <span>🍗</span>
+  
+        <div>
+          <strong>Machine Croquette</strong>
+          <small id="feeder-sheet-status">En ligne</small>
+        </div>
+      </div>
+  
+  
+      <button
+        class="action-row"
+        id="open-feeder-camera"
+      >
+        <span>📷</span>
+  
+        <div>
+          <strong>Caméra</strong>
+          <small>Ouvrir PETLIBRO</small>
+        </div>
+  
+        <span class="action-chevron">›</span>
+      </button>
+  
+  
+      <button
+        class="action-row"
+        id="feed-now-button"
+      >
+        <span>🍗</span>
+  
+        <div>
+          <strong>Distribuer 10 g</strong>
+          <small>Distribution manuelle</small>
+        </div>
+  
+        <span class="action-chevron">›</span>
+      </button>
+  
+  
+      <button
+        class="action-row"
+        id="reboot-feeder-button"
+      >
+        <span>🔄</span>
+  
+        <div>
+          <strong>Redémarrer</strong>
+          <small>Redémarrer la machine</small>
+        </div>
+  
+        <span class="action-chevron">›</span>
+      </button>
+  
+  
+      <button
+        class="action-row"
+        id="reset-feeder-filter"
+      >
+        <span>🧹</span>
+  
+        <div>
+          <strong>Filtre changé</strong>
+          <small>Remettre le compteur à aujourd'hui</small>
+        </div>
+  
+        <span class="action-chevron">›</span>
+      </button>
+  
+  
+      <button
+        id="close-feeder-actions"
+        class="action-sheet-cancel"
+      >
+        Annuler
+      </button>
+  
+    </div>
+  
+  </div>
+  
   <script src="app.js"></script>
 
 </body>
