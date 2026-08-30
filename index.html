@@ -167,23 +167,40 @@
       <h3>Objectifs du jour</h3>
 
 
-      <!-- FOOD GOAL -->
+      <!-- ================================================= -->
+      <!-- CROQUETTES -->
+      <!-- ================================================= -->
 
       <article class="goal-card">
 
         <div class="goal-header">
 
           <div>
-            <span class="goal-icon">🍗</span>
+
+            <span class="goal-icon">
+              🍗
+            </span>
 
             <div>
-              <small>Nourriture</small>
+
+              <small>
+                Croquettes
+              </small>
 
               <strong>
-                <span id="food-current">--</span>
-                <span class="goal-total">/ 30 g</span>
+
+                <span id="food-current">
+                  -- g
+                </span>
+
+                <span class="goal-total">
+                  / 30 g
+                </span>
+
               </strong>
+
             </div>
+
           </div>
 
           <div
@@ -195,12 +212,16 @@
 
         </div>
 
+
         <div class="progress-track">
+
           <div
             id="food-progress"
             class="progress-fill"
           ></div>
+
         </div>
+
 
         <div class="goal-footer">
 
@@ -217,24 +238,123 @@
       </article>
 
 
-      <!-- WATER GOAL -->
+      <!-- ================================================= -->
+      <!-- PATEE -->
+      <!-- ================================================= -->
+
+      <article
+        id="wet-food-card"
+        class="goal-card wet-food-card"
+      >
+
+        <div class="goal-header">
+
+          <div>
+
+            <span class="goal-icon">
+              🥫
+            </span>
+
+            <div>
+
+              <small>
+                Pâtée · prévue à 19:00
+              </small>
+
+              <strong>
+
+                <span id="wet-food-current">
+                  0 g
+                </span>
+
+                <span class="goal-total">
+                  / 50 g
+                </span>
+
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="wet-food-percent"
+            class="goal-percent"
+          >
+            0 %
+          </div>
+
+        </div>
+
+
+        <div class="progress-track">
+
+          <div
+            id="wet-food-progress"
+            class="progress-fill wet-food-progress"
+          ></div>
+
+        </div>
+
+
+        <div class="goal-footer">
+
+          <span id="wet-food-state">
+            Prévue à 19:00
+          </span>
+
+          <span id="wet-food-time"></span>
+
+        </div>
+
+
+        <button
+          id="confirm-wet-food"
+          class="wet-food-button"
+        >
+          🥫 Pâtée donnée · 50 g
+        </button>
+
+      </article>
+
+
+      <!-- ================================================= -->
+      <!-- WATER -->
+      <!-- ================================================= -->
 
       <article class="goal-card">
 
         <div class="goal-header">
 
           <div>
-            <span class="goal-icon">💧</span>
+
+            <span class="goal-icon">
+              💧
+            </span>
 
             <div>
-              <small>Hydratation</small>
+
+              <small>
+                Hydratation
+              </small>
 
               <strong>
-                <span id="water-current">--</span>
-                <span class="goal-total">/ 100 ml</span>
+
+                <span id="water-current">
+                  -- ml
+                </span>
+
+                <span class="goal-total">
+                  / 100 ml
+                </span>
+
               </strong>
+
             </div>
+
           </div>
+
 
           <div
             id="water-percent"
@@ -245,12 +365,16 @@
 
         </div>
 
+
         <div class="progress-track">
+
           <div
             id="water-progress"
             class="progress-fill water-progress"
           ></div>
+
         </div>
+
 
         <div class="goal-footer">
 
@@ -267,6 +391,10 @@
       </article>
 
 
+      <!-- ================================================= -->
+      <!-- HEALTH SUMMARY -->
+      <!-- ================================================= -->
+
       <section class="grid health-grid">
 
         <article
@@ -274,9 +402,13 @@
           data-page="health"
         >
 
-          <div class="icon">⚖️</div>
+          <div class="icon">
+            ⚖️
+          </div>
 
-          <span>Poids</span>
+          <span>
+            Poids
+          </span>
 
           <strong id="weight">
             À renseigner
@@ -294,9 +426,13 @@
           data-page="health"
         >
 
-          <div class="icon">💉</div>
+          <div class="icon">
+            💉
+          </div>
 
-          <span>Vaccins</span>
+          <span>
+            Vaccins
+          </span>
 
           <strong id="vaccines">
             À renseigner
@@ -311,7 +447,9 @@
       </section>
 
 
+      <!-- ================================================= -->
       <!-- DEVICES -->
+      <!-- ================================================= -->
 
       <h3>Appareils</h3>
 
@@ -340,12 +478,10 @@
 
           </div>
 
-          <div
-            id="feeder-wifi"
-            class="wifi"
-          >
-            ▂▄▆█
-          </div>
+          <span
+            id="feeder-dot"
+            class="device-state-dot"
+          ></span>
 
         </article>
 
@@ -373,19 +509,19 @@
 
           </div>
 
-          <div
-            id="fountain-wifi"
-            class="wifi"
-          >
-            ▂▄▆█
-          </div>
+          <span
+            id="fountain-dot"
+            class="device-state-dot"
+          ></span>
 
         </article>
 
       </section>
 
 
+      <!-- ================================================= -->
       <!-- MAINTENANCE -->
+      <!-- ================================================= -->
 
       <h3>Entretien</h3>
 
@@ -410,7 +546,9 @@
 
       <div class="page-title">
 
-        <h2>Historique 📊</h2>
+        <h2>
+          Historique 📊
+        </h2>
 
         <p>
           Les 7 derniers jours
@@ -437,7 +575,9 @@
 
       <div class="page-title">
 
-        <h2>Santé ❤️</h2>
+        <h2>
+          Santé ❤️
+        </h2>
 
         <p>
           Suivi personnel de Keira
@@ -446,23 +586,32 @@
       </div>
 
 
+      <!-- POIDS -->
+
       <article class="health-card">
 
         <div class="health-card-title">
 
           <div>
+
             <span class="big-emoji">
               ⚖️
             </span>
 
             <div>
-              <strong>Poids</strong>
+
+              <strong>
+                Poids
+              </strong>
 
               <small id="health-current-weight">
                 Aucune mesure
               </small>
+
             </div>
+
           </div>
+
 
           <button
             class="mini-button"
@@ -481,23 +630,32 @@
       </article>
 
 
+      <!-- VACCINS -->
+
       <article class="health-card">
 
         <div class="health-card-title">
 
           <div>
+
             <span class="big-emoji">
               💉
             </span>
 
             <div>
-              <strong>Vaccins</strong>
+
+              <strong>
+                Vaccins
+              </strong>
 
               <small>
                 Rappels et historique
               </small>
+
             </div>
+
           </div>
+
 
           <button
             class="mini-button"
@@ -516,23 +674,32 @@
       </article>
 
 
+      <!-- TRAITEMENTS -->
+
       <article class="health-card">
 
         <div class="health-card-title">
 
           <div>
+
             <span class="big-emoji">
               💊
             </span>
 
             <div>
-              <strong>Traitements</strong>
+
+              <strong>
+                Traitements
+              </strong>
 
               <small>
                 Vermifuge, antiparasitaire…
               </small>
+
             </div>
+
           </div>
+
 
           <button
             class="mini-button"
@@ -553,7 +720,9 @@
     </section>
 
 
-    <!-- NAV -->
+    <!-- =================================================== -->
+    <!-- NAVIGATION -->
+    <!-- =================================================== -->
 
     <nav>
 
@@ -592,7 +761,7 @@
 
 
   <!-- ===================================================== -->
-  <!-- MODALS -->
+  <!-- MODAL POIDS -->
   <!-- ===================================================== -->
 
   <div
@@ -602,9 +771,13 @@
 
     <div class="modal-content">
 
-      <h2>⚖️ Ajouter un poids</h2>
+      <h2>
+        ⚖️ Ajouter un poids
+      </h2>
 
-      <label>Poids en kg</label>
+      <label>
+        Poids en kg
+      </label>
 
       <input
         id="weight-input"
@@ -613,7 +786,9 @@
         placeholder="Ex : 4.25"
       >
 
-      <label>Note</label>
+      <label>
+        Note
+      </label>
 
       <input
         id="weight-note"
@@ -637,6 +812,10 @@
   </div>
 
 
+  <!-- ===================================================== -->
+  <!-- MODAL VACCIN -->
+  <!-- ===================================================== -->
+
   <div
     id="vaccine-modal"
     class="modal hidden"
@@ -644,9 +823,13 @@
 
     <div class="modal-content">
 
-      <h2>💉 Ajouter un vaccin</h2>
+      <h2>
+        💉 Ajouter un vaccin
+      </h2>
 
-      <label>Vaccin</label>
+      <label>
+        Vaccin
+      </label>
 
       <input
         id="vaccine-name"
@@ -654,14 +837,18 @@
         placeholder="Typhus / Coryza..."
       >
 
-      <label>Date</label>
+      <label>
+        Date
+      </label>
 
       <input
         id="vaccine-date"
         type="date"
       >
 
-      <label>Prochain rappel</label>
+      <label>
+        Prochain rappel
+      </label>
 
       <input
         id="vaccine-next"
@@ -684,6 +871,10 @@
   </div>
 
 
+  <!-- ===================================================== -->
+  <!-- MODAL TRAITEMENT -->
+  <!-- ===================================================== -->
+
   <div
     id="treatment-modal"
     class="modal hidden"
@@ -691,37 +882,64 @@
 
     <div class="modal-content">
 
-      <h2>💊 Ajouter un traitement</h2>
+      <h2>
+        💊 Ajouter un traitement
+      </h2>
 
-      <label>Type</label>
+      <label>
+        Type
+      </label>
 
       <select id="treatment-type">
-        <option>Vermifuge</option>
-        <option>Antiparasitaire</option>
-        <option>Médicament</option>
-        <option>Autre</option>
+
+        <option>
+          Vermifuge
+        </option>
+
+        <option>
+          Antiparasitaire
+        </option>
+
+        <option>
+          Médicament
+        </option>
+
+        <option>
+          Autre
+        </option>
+
       </select>
 
-      <label>Produit</label>
+
+      <label>
+        Produit
+      </label>
 
       <input
         id="treatment-product"
         type="text"
       >
 
-      <label>Date</label>
+
+      <label>
+        Date
+      </label>
 
       <input
         id="treatment-date"
         type="date"
       >
 
-      <label>Prochaine échéance</label>
+
+      <label>
+        Prochaine échéance
+      </label>
 
       <input
         id="treatment-next"
         type="date"
       >
+
 
       <button
         id="save-treatment"
