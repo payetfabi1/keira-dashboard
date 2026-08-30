@@ -2860,3 +2860,136 @@ if (openFeederCamera) {
     }
   );
 }
+
+
+const resetFeederFilterButton =
+  document.getElementById(
+    "reset-feeder-filter"
+  );
+
+if (
+  resetFeederFilterButton
+) {
+
+  resetFeederFilterButton
+    .addEventListener(
+      "click",
+      async () => {
+
+        const confirmed =
+          window.confirm(
+            "Tu confirmes avoir changé le filtre croquettes aujourd’hui ?"
+          );
+
+        if (!confirmed) {
+          return;
+        }
+
+
+        resetFeederFilterButton.disabled =
+          true;
+
+        resetFeederFilterButton
+          .querySelector("strong")
+          .textContent =
+            "Mise à jour...";
+
+
+        try {
+
+          const {
+            data: {
+              session
+            }
+          } =
+            await supabaseClient
+              .auth
+              .getSession();
+
+
+          if (!session) {
+            throw new Error(
+              "Session expirée"
+            );
+          }
+
+
+          const response =
+            await fetch(
+              "https://iayxqoevmkhkhhtdmrrk.supabase.co/functions/v1/keira-device-actions",
+              {
+                method:
+                  "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json",
+
+                  "Authorization":
+                    `Bearer ${session.access_token}`,
+                },
+
+                body:
+                  JSON.stringify({
+                    action:
+                      "reset_feeder_filter",
+                  }),
+              }
+            );
+
+
+          const result =
+            await response.json();
+
+
+          if (
+            !response.ok
+            || !result.ok
+          ) {
+            throw new Error(
+              result.error
+              || "Erreur inconnue"
+            );
+          }
+
+
+          alert(
+            "✅ Filtre croquettes remis à zéro"
+          );
+
+
+          feederActionsModal
+            ?.classList.add(
+              "hidden"
+            );
+
+
+          /*
+           * Le vrai état PETLIBRO sera repris
+           * automatiquement au prochain sync.
+           */
+          await loadHome();
+
+        } catch (
+          error
+        ) {
+
+          alert(
+            "⚠️ Impossible de mettre à jour le filtre : "
+            + error.message
+          );
+
+        } finally {
+
+          resetFeederFilterButton.disabled =
+            false;
+
+
+          resetFeederFilterButton
+            .querySelector("strong")
+            .textContent =
+              "Filtre changé";
+        }
+      }
+    );
+}
