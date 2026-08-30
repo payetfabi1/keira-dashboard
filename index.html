@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
 
@@ -11,13 +12,24 @@
   <meta name="theme-color" content="#f6f6f4">
 
   <title>Keira 🐱</title>
-  <link rel="apple-touch-icon" sizes="180x180" href="/keira-dashboard/apple-touch-icon.png?v=2">
-  <link rel="icon" type="image/png" href="/keira-dashboard/apple-touch-icon.png?v=2">
+
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="/keira-dashboard/apple-touch-icon.png?v=2"
+  >
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="/keira-dashboard/apple-touch-icon.png?v=2"
+  >
 
   <link rel="stylesheet" href="style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 
 <body>
 
@@ -25,11 +37,16 @@
   <!-- LOGIN -->
   <!-- ===================================================== -->
 
-  <section id="login-screen" class="login-screen hidden">
+  <section
+    id="login-screen"
+    class="login-screen hidden"
+  >
 
     <div class="login-card">
 
-      <div class="login-cat">🐱</div>
+      <div class="login-cat">
+        🐱
+      </div>
 
       <h1>Keira</h1>
 
@@ -86,9 +103,13 @@
 
     <div class="login-card">
 
-      <div class="login-cat">🔐</div>
+      <div class="login-cat">
+        🔐
+      </div>
 
-      <h1>Nouveau mot de passe</h1>
+      <h1>
+        Nouveau mot de passe
+      </h1>
 
       <input
         id="new-password"
@@ -125,8 +146,13 @@
     <header class="topbar">
 
       <div>
-        <p class="hello">Bonjour 👋</p>
-        <h1>Keira 🐱</h1>
+        <p class="hello">
+          Bonjour 👋
+        </p>
+
+        <h1>
+          Keira 🐱
+        </h1>
       </div>
 
       <div
@@ -160,13 +186,17 @@
 
         <p>
           Dernière actualisation :
-          <span id="updated">--</span>
+          <span id="updated">
+            --
+          </span>
         </p>
 
       </section>
 
 
-      <h3>Objectifs du jour</h3>
+      <h3>
+        Objectifs du jour
+      </h3>
 
 
       <!-- ================================================= -->
@@ -279,7 +309,6 @@
 
           </div>
 
-
           <div
             id="wet-food-percent"
             class="goal-percent"
@@ -356,7 +385,6 @@
             </div>
 
           </div>
-
 
           <div
             id="water-percent"
@@ -453,44 +481,54 @@
       <!-- DEVICES -->
       <!-- ================================================= -->
 
-      <h3>Appareils</h3>
+      <h3>
+        Appareils
+      </h3>
 
       <section class="devices">
+
+
+        <!-- MACHINE CROQUETTE -->
 
         <article
           class="device clickable-device"
           id="feeder-card"
         >
-        
+
           <div class="device-icon">
             🍗
           </div>
-        
+
           <div class="device-main">
-        
+
             <strong>
               Machine Croquette
             </strong>
-        
+
             <small id="feeder-status">
               Chargement...
             </small>
-        
+
             <small
               id="feeder-extra"
               class="device-extra"
             ></small>
-        
+
           </div>
-        
+
           <div class="device-action">
             ›
           </div>
-        
+
         </article>
 
 
-        <article class="device">
+        <!-- FONTAINE KIKI -->
+
+        <article
+          class="device clickable-device"
+          id="fountain-card"
+        >
 
           <div class="device-icon">
             💦
@@ -513,12 +551,12 @@
 
           </div>
 
-          <span
-            id="fountain-dot"
-            class="device-state-dot"
-          ></span>
+          <div class="device-action">
+            ›
+          </div>
 
         </article>
+
 
       </section>
 
@@ -527,7 +565,9 @@
       <!-- MAINTENANCE -->
       <!-- ================================================= -->
 
-      <h3>Entretien</h3>
+      <h3>
+        Entretien
+      </h3>
 
       <section
         id="maintenance-list"
@@ -616,7 +656,6 @@
 
           </div>
 
-
           <button
             class="mini-button"
             data-modal="weight-modal"
@@ -660,7 +699,6 @@
 
           </div>
 
-
           <button
             class="mini-button"
             data-modal="vaccine-modal"
@@ -703,7 +741,6 @@
             </div>
 
           </div>
-
 
           <button
             class="mini-button"
@@ -914,7 +951,6 @@
 
       </select>
 
-
       <label>
         Produit
       </label>
@@ -923,7 +959,6 @@
         id="treatment-product"
         type="text"
       >
-
 
       <label>
         Date
@@ -934,7 +969,6 @@
         type="date"
       >
 
-
       <label>
         Prochaine échéance
       </label>
@@ -943,7 +977,6 @@
         id="treatment-next"
         type="date"
       >
-
 
       <button
         id="save-treatment"
@@ -964,97 +997,263 @@
   <!-- ===================================================== -->
   <!-- FEEDER ACTIONS -->
   <!-- ===================================================== -->
-  
+
   <div
     id="feeder-actions-modal"
     class="action-sheet hidden"
   >
-  
+
     <div class="action-sheet-content">
-  
+
       <div class="action-sheet-handle"></div>
-  
+
       <div class="action-sheet-title">
-        <span>🍗</span>
-  
+
+        <span>
+          🍗
+        </span>
+
         <div>
-          <strong>Machine Croquette</strong>
-          <small id="feeder-sheet-status">En ligne</small>
+
+          <strong>
+            Machine Croquette
+          </strong>
+
+          <small id="feeder-sheet-status">
+            En ligne
+          </small>
+
         </div>
+
       </div>
-  
-  
+
+
       <button
         class="action-row"
         id="open-feeder-camera"
       >
-        <span>📷</span>
-  
+
+        <span>
+          📷
+        </span>
+
         <div>
-          <strong>Caméra</strong>
-          <small>Ouvrir PETLIBRO</small>
+
+          <strong>
+            Caméra
+          </strong>
+
+          <small>
+            Ouvrir PETLIBRO
+          </small>
+
         </div>
-  
-        <span class="action-chevron">›</span>
+
+        <span class="action-chevron">
+          ›
+        </span>
+
       </button>
-  
-  
+
+
       <button
         class="action-row"
         id="feed-now-button"
       >
-        <span>🍗</span>
-  
+
+        <span>
+          🍗
+        </span>
+
         <div>
-          <strong>Distribuer 10 g</strong>
-          <small>Distribution manuelle</small>
+
+          <strong>
+            Distribuer 10 g
+          </strong>
+
+          <small>
+            Distribution manuelle
+          </small>
+
         </div>
-  
-        <span class="action-chevron">›</span>
+
+        <span class="action-chevron">
+          ›
+        </span>
+
       </button>
-  
-  
+
+
       <button
         class="action-row"
         id="reboot-feeder-button"
       >
-        <span>🔄</span>
-  
+
+        <span>
+          🔄
+        </span>
+
         <div>
-          <strong>Redémarrer</strong>
-          <small>Redémarrer la machine</small>
+
+          <strong>
+            Redémarrer
+          </strong>
+
+          <small>
+            Indisponible pour le moment
+          </small>
+
         </div>
-  
-        <span class="action-chevron">›</span>
+
+        <span class="action-chevron">
+          ›
+        </span>
+
       </button>
-  
-  
+
+
       <button
         class="action-row"
         id="reset-feeder-filter"
       >
-        <span>🧹</span>
-  
+
+        <span>
+          🧹
+        </span>
+
         <div>
-          <strong>Filtre changé</strong>
-          <small>Remettre le compteur à aujourd'hui</small>
+
+          <strong>
+            Filtre changé
+          </strong>
+
+          <small>
+            Remettre le compteur à aujourd'hui
+          </small>
+
         </div>
-  
-        <span class="action-chevron">›</span>
+
+        <span class="action-chevron">
+          ›
+        </span>
+
       </button>
-  
-  
+
+
       <button
         id="close-feeder-actions"
         class="action-sheet-cancel"
       >
         Annuler
       </button>
-  
+
     </div>
-  
+
   </div>
-  
+
+
+  <!-- ===================================================== -->
+  <!-- FOUNTAIN ACTIONS -->
+  <!-- ===================================================== -->
+
+  <div
+    id="fountain-actions-modal"
+    class="action-sheet hidden"
+  >
+
+    <div class="action-sheet-content">
+
+      <div class="action-sheet-handle"></div>
+
+      <div class="action-sheet-title">
+
+        <span>
+          💦
+        </span>
+
+        <div>
+
+          <strong>
+            Fontaine kiki
+          </strong>
+
+          <small id="fountain-sheet-status">
+            En ligne
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <button
+        class="action-row"
+        id="reset-fountain-cleaning"
+      >
+
+        <span>
+          🧽
+        </span>
+
+        <div>
+
+          <strong>
+            Nettoyage effectué
+          </strong>
+
+          <small>
+            Remettre le compteur à aujourd'hui
+          </small>
+
+        </div>
+
+        <span class="action-chevron">
+          ›
+        </span>
+
+      </button>
+
+
+      <button
+        class="action-row"
+        id="reset-fountain-filter"
+      >
+
+        <span>
+          🧹
+        </span>
+
+        <div>
+
+          <strong>
+            Filtre changé
+          </strong>
+
+          <small>
+            Remettre le compteur à aujourd'hui
+          </small>
+
+        </div>
+
+        <span class="action-chevron">
+          ›
+        </span>
+
+      </button>
+
+
+      <button
+        id="close-fountain-actions"
+        class="action-sheet-cancel"
+      >
+        Annuler
+      </button>
+
+    </div>
+
+  </div>
+
+
   <script src="app.js"></script>
 
 </body>
