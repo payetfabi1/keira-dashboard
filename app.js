@@ -3223,3 +3223,270 @@ if (
     }
   );
 }
+
+const resetFountainCleaningButton =
+  document.getElementById(
+    "reset-fountain-cleaning"
+  );
+
+const resetFountainFilterButton =
+  document.getElementById(
+    "reset-fountain-filter"
+  );
+
+
+async function callDeviceAction(
+  action
+) {
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient
+      .auth
+      .getSession();
+
+
+  if (!session) {
+    throw new Error(
+      "Session expirée"
+    );
+  }
+
+
+  const response =
+    await fetch(
+      "https://iayxqoevmkhkhhtdmrrk.supabase.co/functions/v1/keira-device-actions",
+      {
+        method:
+          "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+
+          "Authorization":
+            `Bearer ${session.access_token}`,
+        },
+
+        body:
+          JSON.stringify({
+            action
+          }),
+      }
+    );
+
+
+  const result =
+    await response.json();
+
+
+  if (
+    !response.ok
+    ||
+    !result.ok
+  ) {
+
+    throw new Error(
+      result.error
+      || "Erreur inconnue"
+    );
+  }
+
+
+  return result;
+}
+
+
+/* =========================================================
+   NETTOYAGE FONTAINE
+========================================================= */
+
+if (
+  resetFountainCleaningButton
+) {
+
+  resetFountainCleaningButton
+    .addEventListener(
+      "click",
+      async () => {
+
+        const confirmed =
+          window.confirm(
+            "Tu confirmes avoir nettoyé la fontaine aujourd’hui ?"
+          );
+
+
+        if (!confirmed) {
+          return;
+        }
+
+
+        const title =
+          resetFountainCleaningButton
+            .querySelector(
+              "strong"
+            );
+
+
+        const oldText =
+          title?.textContent
+          || "Nettoyage effectué";
+
+
+        resetFountainCleaningButton.disabled =
+          true;
+
+
+        if (title) {
+          title.textContent =
+            "Mise à jour...";
+        }
+
+
+        try {
+
+          await callDeviceAction(
+            "reset_fountain_cleaning"
+          );
+
+
+          alert(
+            "✅ Nettoyage fontaine enregistré"
+          );
+
+
+          fountainActionsModal
+            ?.classList.add(
+              "hidden"
+            );
+
+
+          setTimeout(
+            () => {
+              loadHome();
+            },
+            5000
+          );
+
+        } catch (
+          error
+        ) {
+
+          alert(
+            "⚠️ Impossible de remettre le nettoyage à zéro : "
+            + error.message
+          );
+
+        } finally {
+
+          resetFountainCleaningButton.disabled =
+            false;
+
+
+          if (title) {
+            title.textContent =
+              oldText;
+          }
+        }
+      }
+    );
+}
+
+
+/* =========================================================
+   FILTRE FONTAINE
+========================================================= */
+
+if (
+  resetFountainFilterButton
+) {
+
+  resetFountainFilterButton
+    .addEventListener(
+      "click",
+      async () => {
+
+        const confirmed =
+          window.confirm(
+            "Tu confirmes avoir changé le filtre de la fontaine aujourd’hui ?"
+          );
+
+
+        if (!confirmed) {
+          return;
+        }
+
+
+        const title =
+          resetFountainFilterButton
+            .querySelector(
+              "strong"
+            );
+
+
+        const oldText =
+          title?.textContent
+          || "Filtre changé";
+
+
+        resetFountainFilterButton.disabled =
+          true;
+
+
+        if (title) {
+          title.textContent =
+            "Mise à jour...";
+        }
+
+
+        try {
+
+          await callDeviceAction(
+            "reset_fountain_filter"
+          );
+
+
+          alert(
+            "✅ Filtre fontaine remis à zéro"
+          );
+
+
+          fountainActionsModal
+            ?.classList.add(
+              "hidden"
+            );
+
+
+          setTimeout(
+            () => {
+              loadHome();
+            },
+            5000
+          );
+
+        } catch (
+          error
+        ) {
+
+          alert(
+            "⚠️ Impossible de remettre le filtre à zéro : "
+            + error.message
+          );
+
+        } finally {
+
+          resetFountainFilterButton.disabled =
+            false;
+
+
+          if (title) {
+            title.textContent =
+              oldText;
+          }
+        }
+      }
+    );
+}
