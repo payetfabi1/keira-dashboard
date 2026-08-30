@@ -1885,6 +1885,32 @@ async function loadHistory() {
         oldestDay
       );
 
+  const {
+  data: waterEvents,
+  error: waterEventsError
+} =
+  await supabaseClient
+    .from(
+      "water_events"
+    )
+    .select("*")
+    .order(
+      "event_time",
+      {
+        ascending: true
+      }
+    );
+
+
+if (
+  waterEventsError
+) {
+  console.error(
+    "water_events:",
+    waterEventsError
+  );
+}
+
 
   const {
     data: wetFood
@@ -1978,6 +2004,37 @@ async function loadHistory() {
                 ?.drink_times
               || 0
             );
+
+          const dayWaterEvents =
+            (waterEvents || [])
+              .filter(
+                event =>
+                  parisDay(
+                    new Date(
+                      event.event_time
+                    )
+                  ) === day
+              );
+          
+          
+          const waterTimes =
+            dayWaterEvents
+              .map(
+                event =>
+                  new Date(
+                    event.event_time
+                  )
+                    .toLocaleTimeString(
+                      "fr-FR",
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        timeZone: "Europe/Paris"
+                      }
+                    )
+                    + " 💧"
+              )
+              .join(" · ");
 
 
           const wetFoodRow =
