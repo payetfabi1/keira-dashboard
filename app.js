@@ -1194,48 +1194,462 @@ async function loadHome() {
 
 
   /* =======================================================
-     POIDS
-  ======================================================= */
+   POIDS
+======================================================= */
 
-  const {
-    data: weights
-  } =
-    await supabaseClient
-      .from(
-        "weight_entries"
-      )
-      .select("*")
-      .order(
-        "measured_at",
-        {
-          ascending: false
-        }
-      )
-      .limit(1);
+const {
+  data: weights,
+  error: weightsError
+} =
+  await supabaseClient
+    .from(
+      "weight_entries"
+    )
+    .select("*")
+    .order(
+      "measured_at",
+      {
+        ascending: true
+      }
+    );
 
+
+if (
+  weightsError
+) {
+
+  console.error(
+    "weight_entries:",
+    weightsError
+  );
+}
+
+
+/* =======================================================
+   DERNIÈRE MESURE
+======================================================= */
+
+const latestWeight =
+  weights?.length
+    ? weights[
+        weights.length - 1
+      ]
+    : null;
+
+
+document
+  .getElementById(
+    "health-current-weight"
+  )
+  .textContent =
+    latestWeight
+      ? `Dernier poids : ${Number(
+          latestWeight.weight_kg
+        ).toLocaleString(
+          "fr-FR"
+        )} kg`
+      : "Aucune mesure";
+
+
+/* =======================================================
+   GRAPHIQUE
+======================================================= */
+
+const chartCanvas =
+  document.getElementById(
+    "weight-chart"
+  );
+
+
+if (
+  chartCanvas
+  &&
+  weights?.length
+) {
+
+  /*
+   * Détruit l'ancien graphique
+   * si loadHealth() est rappelé.
+   */
 
   if (
-    weights?.length
+    window.keiraWeightChart
   ) {
 
-    document
-      .getElementById(
-        "weight"
-      )
-      .textContent =
-        `${weights[0].weight_kg} kg`;
+    window
+      .keiraWeightChart
+      .destroy();
+  }
 
 
-    document
-      .getElementById(
-        "weight-date"
+  const labels =
+    weights.map(
+      weight =>
+        new Date(
+          `${weight.measured_at}T12:00:00`
+        )
+          .toLocaleDateString(
+            "fr-FR",
+            {
+              day:
+                "2-digit",
+
+              month:
+                "2-digit",
+
+              year:
+                "2-digit",
+            }
+          )
+    );
+
+
+  const values =
+    weights.map(
+      weight =>
+        Number(
+          weight.weight_kg
+        )
+    );
+
+
+  window.keiraWeightChart =
+    new Chart(
+      chartCanvas,
+      {
+
+        type:
+          "line",
+
+        data: {
+
+          labels,
+
+          datasets: [
+            {
+              label:
+                "Poids",
+
+              data:
+                values,
+
+              borderWidth:
+                3,
+
+              pointRadius:
+                5,
+
+              pointHoverRadius:
+                7,
+
+              tension:
+                0.32,
+
+              fill:
+                true,
+            }
+          ]
+        },
+
+
+        options: {
+
+          responsive:
+            true,
+
+          maintainAspectRatio:
+            false,
+
+          plugins: {
+
+            legend: {
+              display:
+                false
+            },
+
+            tooltip: {
+
+              callbacks: {
+
+                label:
+                  context =>
+                    `${context.parsed.y.toLocaleString(
+                      "fr-FR"
+                    )} kg`
+              }
+            }
+          },
+
+
+          interaction: {
+
+            mode:
+              "index",
+
+            intersect:
+              false
+          },
+
+
+          scales: {
+
+            x: {
+
+              grid: {
+                display:
+                  false
+              },
+
+              ticks: {
+
+                maxRotation:
+                  0,
+
+                autoSkip:
+                  true,
+
+                maxTicksLimit:
+                  5
+              }
+            },
+
+
+            y: {
+
+              suggestedMin:
+                5.8,
+
+              suggestedMax:
+                7.0,
+
+              ticks: {
+
+                callback:
+                  value =>
+                    `${Number(
+                      value
+                    ).toLocaleString(
+                      "fr-FR"
+                    )}`
+              }
+            }
+          }
+        }
+      }
+    );
+}
+
+
+/* =======================================================
+   VARIATION TOTALE
+======================================================= */
+
+const weightSummary =
+  document.getElementById(
+    "weight-summary"
+  );
+
+
+if (
+  weightSummary
+  &&
+  weights?.length >= 2
+) {
+
+  const first =
+    Number(
+      weights[0]
+        .weight_kg
+    );
+
+
+  const last =
+    Number(
+      latestWeight
+        .weight_kg
+    );
+
+
+  const difference =
+    Number(
+      (
+        last - first
       )
-      .textContent =
-        formatDate(
+        .toFixed(2)
+    );
+
+
+  const sign =
+    difference > 0
+      ? "+"
+      : "";
+
+
+  weightSummary.innerHTML =
+    `
+      <strong>
+        ${
+          difference < 0
+            ? "↘️"
+            : difference > 0
+            ? "↗️"
+            : "➡️"
+        }
+
+        Variation totale :
+        ${sign}${difference.toLocaleString(
+          "fr-FR"
+        )} kg
+      </strong>
+
+      <small>
+        Du
+        ${formatDate(
           weights[0]
             .measured_at
-        );
-  }
+        )}
+        au
+        ${formatDate(
+          latestWeight
+            .measured_at
+        )}
+      </small>
+    `;
+}
+
+
+/* =======================================================
+   HISTORIQUE
+======================================================= */
+
+const weightHistory =
+  document.getElementById(
+    "weight-history"
+  );
+
+
+if (
+  weightHistory
+) {
+
+  weightHistory.innerHTML =
+    weights?.length
+
+      ? [...weights]
+        .reverse()
+        .map(
+          (
+            weight,
+            index,
+            reversedWeights
+          ) => {
+
+            const current =
+              Number(
+                weight.weight_kg
+              );
+
+
+            /*
+             * Dans la liste inversée,
+             * la mesure précédente
+             * se trouve à index + 1.
+             */
+
+            const previous =
+              reversedWeights[
+                index + 1
+              ];
+
+
+            let variationHTML =
+              `<span class="weight-delta neutral">—</span>`;
+
+
+            if (
+              previous
+            ) {
+
+              const previousValue =
+                Number(
+                  previous.weight_kg
+                );
+
+
+              const difference =
+                Number(
+                  (
+                    current
+                    - previousValue
+                  )
+                    .toFixed(2)
+                );
+
+
+              const sign =
+                difference > 0
+                  ? "+"
+                  : "";
+
+
+              const className =
+                difference < 0
+                  ? "down"
+                  : difference > 0
+                  ? "up"
+                  : "neutral";
+
+
+              variationHTML =
+                `
+                  <span
+                    class="weight-delta ${className}"
+                  >
+                    ${
+                      difference < 0
+                        ? "↓"
+                        : difference > 0
+                        ? "↑"
+                        : "→"
+                    }
+
+                    ${sign}${difference.toLocaleString(
+                      "fr-FR"
+                    )} kg
+                  </span>
+                `;
+            }
+
+
+            return `
+              <div class="weight-history-row">
+
+                <span>
+                  ${formatDate(
+                    weight.measured_at
+                  )}
+                </span>
+
+                <strong>
+                  ${current.toLocaleString(
+                    "fr-FR"
+                  )} kg
+                </strong>
+
+                ${variationHTML}
+
+              </div>
+            `;
+          }
+        )
+        .join("")
+
+      : `
+        <div class="health-row">
+          Aucune mesure
+        </div>
+      `;
+}
 
 
   /* =======================================================
