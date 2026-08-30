@@ -2856,7 +2856,7 @@ if (openFeederCamera) {
         );
 
       window.location.href =
-        "petlibrolite://";
+        "petlibro://";
     }
   );
 }
