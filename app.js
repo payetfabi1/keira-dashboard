@@ -2314,6 +2314,23 @@ if (
 
                 </div>
 
+                <div class="meal-times">
+
+                ${
+                  waterTimes
+                    || (
+                      drinks > 0
+                        ? `${drinks} prise${
+                            drinks === 1
+                              ? ""
+                              : "s"
+                          } · horaires indisponibles`
+                        : "Aucune prise"
+                    )
+                }
+              
+              </div>
+
               </div>
 
             </article>
