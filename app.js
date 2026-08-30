@@ -676,7 +676,8 @@ function setDevice(
 
 function maintenanceHTML(
   feeder,
-  fountain
+  fountain,
+  litterCleaning
 ) {
 
   const rawFountain =
@@ -710,8 +711,19 @@ function maintenanceHTML(
     );
 
 
+  const litterAge =
+    daysSinceDate(
+      litterCleaning
+        ?.cleaned_at
+    );
+
+
   const rows = [];
 
+
+  /* =======================================================
+     FILTRE FONTAINE
+  ======================================================= */
 
   if (
     filterAge != null
@@ -738,6 +750,7 @@ function maintenanceHTML(
 
           <small>
             Changé ${daysText(filterAge)}
+
             ${
               filterAge >= 12
               && filterAge < 15
@@ -750,6 +763,7 @@ function maintenanceHTML(
                 ? " · à changer"
                 : ""
             }
+
           </small>
 
         </div>
@@ -758,6 +772,10 @@ function maintenanceHTML(
     `);
   }
 
+
+  /* =======================================================
+     NETTOYAGE FONTAINE
+  ======================================================= */
 
   if (
     cleaningAge != null
@@ -784,6 +802,7 @@ function maintenanceHTML(
 
           <small>
             Fait ${daysText(cleaningAge)}
+
             ${
               cleaningAge >= 12
               && cleaningAge < 15
@@ -796,6 +815,7 @@ function maintenanceHTML(
                 ? " · à refaire"
                 : ""
             }
+
           </small>
 
         </div>
@@ -804,6 +824,10 @@ function maintenanceHTML(
     `);
   }
 
+
+  /* =======================================================
+     FILTRE CROQUETTES
+  ======================================================= */
 
   if (
     feederFilterAge != null
@@ -829,7 +853,9 @@ function maintenanceHTML(
           </strong>
 
           <small>
-            Changé ${daysText(feederFilterAge)}
+            Changé ${daysText(
+              feederFilterAge
+            )}
 
             ${
               feederFilterAge >= 12
@@ -843,6 +869,7 @@ function maintenanceHTML(
                 ? " · à changer"
                 : ""
             }
+
           </small>
 
         </div>
@@ -850,6 +877,84 @@ function maintenanceHTML(
       </div>
     `);
   }
+
+
+  /* =======================================================
+     NETTOYAGE LITIÈRE
+  ======================================================= */
+
+  rows.push(`
+    <div class="maintenance-row litter-maintenance">
+
+      <span class="maintenance-icon">
+
+        ${
+          litterAge == null
+            ? "⚪"
+            : litterAge < 25
+            ? "✅"
+            : litterAge <= 30
+            ? "🟠"
+            : "🔴"
+        }
+
+      </span>
+
+
+      <div>
+
+        <strong>
+          Nettoyage litière
+        </strong>
+
+        <small>
+
+          ${
+            litterAge == null
+
+              ? "Jamais renseigné"
+
+              : `
+                Fait ${daysText(
+                  litterAge
+                )}
+
+                ${
+                  litterAge >= 25
+                  && litterAge <= 30
+                    ? " · à refaire bientôt"
+                    : ""
+                }
+
+                ${
+                  litterAge > 30
+                    ? ` · en retard de ${
+                        litterAge - 30
+                      } jour${
+                        litterAge - 30 === 1
+                          ? ""
+                          : "s"
+                      }`
+                    : ""
+                }
+              `
+          }
+
+        </small>
+
+      </div>
+
+
+      <button
+        id="litter-clean-button"
+        class="litter-clean-button"
+        type="button"
+      >
+        Fait
+      </button>
+
+    </div>
+  `);
 
 
   return rows.length
@@ -1499,15 +1604,143 @@ async function loadHome() {
   );
 
 
-  document
-    .getElementById(
-      "maintenance-list"
+/* =======================================================
+   NETTOYAGE LITIÈRE
+======================================================= */
+
+const {
+  data: litterRows,
+  error: litterError
+} =
+  await supabaseClient
+    .from(
+      "litter_cleanings"
     )
-    .innerHTML =
-      maintenanceHTML(
-        feeder,
-        fountain
-      );
+    .select("*")
+    .order(
+      "cleaned_at",
+      {
+        ascending: false
+      }
+    )
+    .limit(1);
+
+
+if (
+  litterError
+) {
+
+  console.error(
+    "litter_cleanings:",
+    litterError
+  );
+}
+
+
+const litterCleaning =
+  litterRows?.[0]
+  || null;
+
+
+/* =======================================================
+   ENTRETIEN
+======================================================= */
+
+document
+  .getElementById(
+    "maintenance-list"
+  )
+  .innerHTML =
+    maintenanceHTML(
+      feeder,
+      fountain,
+      litterCleaning
+    );
+
+
+/* =======================================================
+   BOUTON NETTOYAGE LITIÈRE
+======================================================= */
+
+const litterButton =
+  document.getElementById(
+    "litter-clean-button"
+  );
+
+
+if (
+  litterButton
+) {
+
+  litterButton.addEventListener(
+    "click",
+    async () => {
+
+      const confirmed =
+        confirm(
+          "Confirmer le nettoyage complet de la litière aujourd'hui ?"
+        );
+
+
+      if (
+        !confirmed
+      ) {
+        return;
+      }
+
+
+      litterButton.disabled =
+        true;
+
+
+      litterButton.textContent =
+        "…";
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from(
+            "litter_cleanings"
+          )
+          .insert({
+            cleaned_at:
+              parisDay()
+          });
+
+
+      if (
+        error
+      ) {
+
+        console.error(
+          "litter cleaning:",
+          error
+        );
+
+
+        alert(
+          "Impossible d'enregistrer le nettoyage."
+        );
+
+
+        litterButton.disabled =
+          false;
+
+
+        litterButton.textContent =
+          "Fait";
+
+
+        return;
+      }
+
+
+      await loadHome();
+    }
+  );
+}
 
 
   /* =======================================================
