@@ -1171,3 +1171,151 @@ nav button.active {
   background: #f3f3f3;
   color: #777;
 }
+
+/* =========================================================
+   HOME HEALTH ALERTS
+========================================================= */
+
+.home-health-alerts {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  cursor: pointer;
+}
+
+
+.home-health-row {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 14px 15px;
+
+  border-radius: 18px;
+
+  background: white;
+}
+
+
+.home-health-icon {
+  width: 38px;
+  height: 38px;
+
+  flex: 0 0 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background:
+    rgba(255,255,255,.65);
+
+  font-size: 21px;
+}
+
+
+.home-health-main {
+  flex: 1;
+
+  min-width: 0;
+}
+
+
+.home-health-main strong,
+.home-health-main small {
+  display: block;
+}
+
+
+.home-health-main strong {
+  font-size: 15px;
+}
+
+
+.home-health-main small {
+  margin-top: 3px;
+
+  color: #888;
+
+  font-size: 12px;
+}
+
+
+.home-health-status {
+  max-width: 145px;
+
+  text-align: right;
+}
+
+
+.home-health-status strong,
+.home-health-status small {
+  display: block;
+}
+
+
+.home-health-status strong {
+  font-size: 18px;
+}
+
+
+.home-health-status small {
+  margin-top: 2px;
+
+  color: #666;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+
+/* priorité visuelle forte si retard */
+
+.home-health-row.health-due-late {
+  background:
+    rgba(
+      255,
+      59,
+      48,
+      .10
+    );
+}
+
+
+.home-health-row.health-due-soon {
+  background:
+    rgba(
+      255,
+      159,
+      10,
+      .12
+    );
+}
+
+
+.home-health-row.health-due-ok {
+  background:
+    rgba(
+      52,
+      199,
+      89,
+      .10
+    );
+}
+
+
+.home-health-row.health-due-neutral {
+  background:
+    rgba(
+      142,
+      142,
+      147,
+      .10
+    );
+}
