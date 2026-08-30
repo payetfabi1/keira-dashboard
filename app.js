@@ -3140,3 +3140,86 @@ if (
     }
   );
 }
+
+
+// =========================================================
+// FOUNTAIN ACTION SHEET
+// =========================================================
+
+const fountainCard =
+  document.getElementById(
+    "fountain-card"
+  );
+
+const fountainActionsModal =
+  document.getElementById(
+    "fountain-actions-modal"
+  );
+
+const closeFountainActions =
+  document.getElementById(
+    "close-fountain-actions"
+  );
+
+
+if (
+  fountainCard &&
+  fountainActionsModal
+) {
+
+  fountainCard.addEventListener(
+    "click",
+    () => {
+
+      fountainActionsModal
+        .classList.remove(
+          "hidden"
+        );
+    }
+  );
+}
+
+
+if (
+  closeFountainActions &&
+  fountainActionsModal
+) {
+
+  closeFountainActions.addEventListener(
+    "click",
+    () => {
+
+      fountainActionsModal
+        .classList.add(
+          "hidden"
+        );
+    }
+  );
+}
+
+
+/*
+ * Clic sur le fond sombre
+ * = fermeture.
+ */
+if (
+  fountainActionsModal
+) {
+
+  fountainActionsModal.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target
+        === fountainActionsModal
+      ) {
+
+        fountainActionsModal
+          .classList.add(
+            "hidden"
+          );
+      }
+    }
+  );
+}
