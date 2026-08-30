@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="style.css?v=20260830-4">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7"></script>
 </head>
 
 
@@ -647,46 +648,68 @@
       </div>
 
 
+      <!-- =================================================== -->
       <!-- POIDS -->
-
-      <article class="health-card">
-
+      <!-- =================================================== -->
+      
+      <article class="health-card weight-card">
+      
         <div class="health-card-title">
-
+      
           <div>
-
+      
             <span class="big-emoji">
               ⚖️
             </span>
-
+      
             <div>
-
+      
               <strong>
-                Poids
+                Évolution du poids
               </strong>
-
+      
               <small id="health-current-weight">
-                Aucune mesure
+                Chargement...
               </small>
-
+      
             </div>
-
+      
           </div>
-
+      
+      
           <button
             class="mini-button"
             data-modal="weight-modal"
           >
             + Ajouter
           </button>
-
+      
         </div>
-
+      
+      
+        <div class="weight-chart-container">
+      
+          <canvas id="weight-chart"></canvas>
+      
+        </div>
+      
+      
+        <div
+          id="weight-summary"
+          class="weight-summary"
+        ></div>
+      
+      
+        <div class="health-history-title">
+          Historique
+        </div>
+      
+      
         <div
           id="weight-history"
-          class="health-list"
+          class="weight-history"
         ></div>
-
+      
       </article>
 
 
