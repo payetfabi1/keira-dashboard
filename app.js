@@ -2915,22 +2915,34 @@ function calculateTreatmentDueDate() {
 }
 
 
-document
-  .getElementById(
+const treatmentTypeInput =
+  document.getElementById(
     "treatment-type"
-  )
-  .addEventListener(
+  );
+
+const treatmentDateInput =
+  document.getElementById(
+    "treatment-date"
+  );
+
+
+treatmentTypeInput
+  ?.addEventListener(
     "change",
     calculateTreatmentDueDate
   );
 
 
-document
-  .getElementById(
-    "treatment-date"
-  )
-  .addEventListener(
+treatmentDateInput
+  ?.addEventListener(
     "change",
+    calculateTreatmentDueDate
+  );
+
+
+treatmentDateInput
+  ?.addEventListener(
+    "input",
     calculateTreatmentDueDate
   );
 
