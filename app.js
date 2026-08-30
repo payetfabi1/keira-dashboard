@@ -2695,3 +2695,54 @@ supabaseClient
 
 
 initialize();
+
+// =========================================================
+// AUTO REFRESH DASHBOARD
+// =========================================================
+
+setInterval(
+  async () => {
+
+    const {
+      data: {
+        session
+      }
+    } =
+      await supabaseClient
+        .auth
+        .getSession();
+
+
+    if (!session) {
+      return;
+    }
+
+
+    console.log(
+      "🔄 Actualisation automatique Keira"
+    );
+
+
+    await loadHome();
+
+
+    const historyPage =
+      document.getElementById(
+        "page-history"
+      );
+
+
+    if (
+      historyPage &&
+      !historyPage.classList.contains(
+        "hidden"
+      )
+    ) {
+
+      await loadHistory();
+    }
+
+  },
+
+  60 * 1000
+);
