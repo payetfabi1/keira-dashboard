@@ -138,6 +138,49 @@ function daysAgo(
   );
 }
 
+function daysSinceDate(
+  dateValue
+) {
+
+  if (
+    !dateValue
+  ) {
+    return null;
+  }
+
+
+  const cleanedDate =
+    new Date(
+      `${dateValue}T12:00:00`
+    );
+
+
+  const today =
+    new Date(
+      `${parisDay()}T12:00:00`
+    );
+
+
+  if (
+    Number.isNaN(
+      cleanedDate.getTime()
+    )
+  ) {
+    return null;
+  }
+
+
+  return Math.max(
+    0,
+    Math.floor(
+      (
+        today.getTime()
+        - cleanedDate.getTime()
+      )
+      / 86400000
+    )
+  );
+}
 
 function daysText(
   days
