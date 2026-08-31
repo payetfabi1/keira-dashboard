@@ -1886,6 +1886,33 @@ async function loadHistory() {
       );
 
   const {
+    data: waterEvents,
+    error: waterEventsError
+  } =
+    await supabaseClient
+      .from(
+        "water_events"
+      )
+      .select("*")
+      .order(
+        "event_time",
+        {
+          ascending: true
+        }
+      );
+  
+  
+  if (
+    waterEventsError
+  ) {
+  
+    console.error(
+      "water_events:",
+      waterEventsError
+    );
+  }
+
+  const {
   data: waterEvents,
   error: waterEventsError
 } =
@@ -2004,6 +2031,37 @@ if (
                 ?.drink_times
               || 0
             );
+
+          const dayWaterEvents =
+            (waterEvents || [])
+              .filter(
+                event =>
+                  parisDay(
+                    new Date(
+                      event.event_time
+                    )
+                  ) === day
+              );
+          
+          
+          const waterTimes =
+            dayWaterEvents
+              .map(
+                event =>
+                  new Date(
+                    event.event_time
+                  )
+                    .toLocaleTimeString(
+                      "fr-FR",
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        timeZone: "Europe/Paris"
+                      }
+                    )
+                    + " 💧"
+              )
+              .join(" · ");
 
           const dayWaterEvents =
             (waterEvents || [])
@@ -2312,6 +2370,23 @@ if (
                     style="width:${waterPct}%"
                   ></div>
 
+                </div>
+
+                <div class="meal-times">
+                
+                  ${
+                    waterTimes
+                      || (
+                        drinks > 0
+                          ? `${drinks} prise${
+                              drinks === 1
+                                ? ""
+                                : "s"
+                            } · horaires indisponibles`
+                          : "Aucune prise"
+                      )
+                  }
+                
                 </div>
 
                 <div class="meal-times">
