@@ -2039,38 +2039,6 @@ async function loadHistory() {
               )
               .join(" · ");
 
-          const dayWaterEvents =
-            (waterEvents || [])
-              .filter(
-                event =>
-                  parisDay(
-                    new Date(
-                      event.event_time
-                    )
-                  ) === day
-              );
-          
-          
-          const waterTimes =
-            dayWaterEvents
-              .map(
-                event =>
-                  new Date(
-                    event.event_time
-                  )
-                    .toLocaleTimeString(
-                      "fr-FR",
-                      {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        timeZone: "Europe/Paris"
-                      }
-                    )
-                    + " 💧"
-              )
-              .join(" · ");
-
-
           const wetFoodRow =
             wetFood?.find(
               item =>
