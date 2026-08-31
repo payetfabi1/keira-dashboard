@@ -1912,31 +1912,7 @@ async function loadHistory() {
     );
   }
 
-  const {
-  data: waterEvents,
-  error: waterEventsError
-} =
-  await supabaseClient
-    .from(
-      "water_events"
-    )
-    .select("*")
-    .order(
-      "event_time",
-      {
-        ascending: true
-      }
-    );
 
-
-if (
-  waterEventsError
-) {
-  console.error(
-    "water_events:",
-    waterEventsError
-  );
-}
 
 
   const {
