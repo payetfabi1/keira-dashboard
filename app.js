@@ -5254,3 +5254,265 @@ if (
       }
     );
 }
+// =========================================================
+// POPUP KIDNAPPING 😼🔒
+// =========================================================
+
+(function showKidnappingPopup() {
+
+  const popup = document.createElement("div");
+
+  popup.id = "kidnapping-popup";
+
+  popup.innerHTML = `
+    <div class="kidnapping-popup-content">
+
+      <div class="kidnapping-emoji">
+        😼🔒🚨🐱🚨🔒😼
+      </div>
+
+      <h2>
+        🚨 TON CHAT A ÉTÉ KIDNAPPÉ 🚨
+      </h2>
+
+      <div class="kidnapping-message">
+        <p>
+          🐾😼 Ton chat est actuellement entre nos pattes... 🐾
+        </p>
+
+        <p class="ransom">
+          💰 RANÇON : <strong>3 CAFÉS ☕☕☕</strong>
+        </p>
+
+        <p>
+          📍 À payer au <strong>Café Joyeux</strong> 🥐☕
+        </p>
+
+        <p>
+          🎁 À donner à ton
+          <strong>4 fantastique préféré</strong> 🦸‍♂️🦸‍♀️✨
+        </p>
+
+        <p class="warning">
+          ⚠️ CHOISIS BIEN... ⚠️
+        </p>
+
+        <p>
+          😈🐱 Nous surveillons ta décision... 👀🐾
+        </p>
+      </div>
+
+      <div class="kidnapping-emoji">
+        ☕☕☕🐱💸😼🔪🍰🚨
+      </div>
+
+      <button id="close-kidnapping-popup">
+        😿 LIBÉRER MON CHAT
+      </button>
+
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+
+
+  const style = document.createElement("style");
+
+  style.textContent = `
+    #kidnapping-popup {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 20px;
+
+      background: rgba(20, 10, 30, 0.78);
+
+      backdrop-filter: blur(7px);
+
+      animation: kidnappingFadeIn 0.35s ease;
+    }
+
+
+    .kidnapping-popup-content {
+      width: min(520px, 100%);
+
+      padding: 30px 25px;
+
+      text-align: center;
+
+      background:
+        linear-gradient(
+          145deg,
+          #fff7e8,
+          #ffe8d6
+        );
+
+      border: 4px solid #ff7a59;
+
+      border-radius: 28px;
+
+      box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.4);
+
+      color: #3b2630;
+
+      animation: kidnappingPop 0.45s cubic-bezier(.17,.67,.32,1.3);
+    }
+
+
+    .kidnapping-emoji {
+      font-size: 28px;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+
+    .kidnapping-popup-content h2 {
+      margin: 8px 0 22px;
+
+      font-size: clamp(22px, 6vw, 34px);
+
+      font-weight: 900;
+
+      color: #d93636;
+
+      text-shadow:
+        2px 2px 0 #ffd6d6;
+    }
+
+
+    .kidnapping-message {
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+
+    .kidnapping-message p {
+      margin: 13px 0;
+    }
+
+
+    .kidnapping-message .ransom {
+      padding: 12px;
+
+      border-radius: 16px;
+
+      background: #fff;
+
+      font-size: 21px;
+
+      color: #9b351f;
+    }
+
+
+    .kidnapping-message .warning {
+      margin-top: 20px;
+
+      font-size: 22px;
+
+      font-weight: 900;
+
+      color: #d93636;
+
+      animation: kidnappingWarning 0.8s infinite alternate;
+    }
+
+
+    #close-kidnapping-popup {
+      margin-top: 20px;
+
+      padding: 15px 24px;
+
+      border: none;
+
+      border-radius: 16px;
+
+      background: #ff7a59;
+
+      color: white;
+
+      font-size: 17px;
+
+      font-weight: 800;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 6px 0 #d9573b;
+
+      transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+    }
+
+
+    #close-kidnapping-popup:hover {
+      transform: translateY(2px);
+      box-shadow: 0 4px 0 #d9573b;
+    }
+
+
+    #close-kidnapping-popup:active {
+      transform: translateY(6px);
+      box-shadow: 0 0 0 #d9573b;
+    }
+
+
+    @keyframes kidnappingFadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+
+    @keyframes kidnappingPop {
+      from {
+        transform: scale(0.75) rotate(-2deg);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+      }
+    }
+
+
+    @keyframes kidnappingWarning {
+      from {
+        transform: scale(1);
+      }
+
+      to {
+        transform: scale(1.06);
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+
+
+  document
+    .getElementById("close-kidnapping-popup")
+    .addEventListener("click", () => {
+
+      popup.style.animation =
+        "kidnappingFadeIn 0.25s reverse";
+
+      setTimeout(() => {
+        popup.remove();
+        style.remove();
+      }, 230);
+
+    });
+
+})();
