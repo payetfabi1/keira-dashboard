@@ -5254,3 +5254,28 @@ if (
       }
     );
 }
+
+// =========================================================
+// PWA / SERVICE WORKER
+// =========================================================
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", async () => {
+    try {
+      const registration =
+        await navigator.serviceWorker.register(
+          "./service-worker.js"
+        );
+
+      console.log(
+        "Keira Service Worker enregistré :",
+        registration.scope
+      );
+    } catch (error) {
+      console.error(
+        "Erreur Service Worker Keira :",
+        error
+      );
+    }
+  });
+}
