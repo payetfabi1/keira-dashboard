@@ -1,0 +1,17 @@
+{
+  "name": "Keira",
+  "short_name": "Keira",
+  "description": "Le dashboard de Keira 🐱",
+  "start_url": "/keira-dashboard/",
+  "scope": "/keira-dashboard/",
+  "display": "standalone",
+  "background_color": "#f7f7f5",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
