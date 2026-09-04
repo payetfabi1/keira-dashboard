@@ -5279,3 +5279,203 @@ if ("serviceWorker" in navigator) {
     }
   });
 }
+
+// =========================================================
+// WEB PUSH
+// =========================================================
+
+const VAPID_PUBLIC_KEY =
+  "BKlFZXlCyZmK8wULlJwsFbmb7JR5nUIFNXbIuoINHG1m0l1pL3n0558uCPJWW1L-d1wNgSMYaLLRc01uX6Pyztg";
+
+
+function urlBase64ToUint8Array(
+  base64String
+) {
+
+  const padding =
+    "=".repeat(
+      (4 - base64String.length % 4) % 4
+    );
+
+  const base64 =
+    (base64String + padding)
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+
+  const rawData =
+    window.atob(base64);
+
+  return Uint8Array.from(
+    [...rawData].map(
+      char =>
+        char.charCodeAt(0)
+    )
+  );
+}
+
+
+const enablePushButton =
+  document.getElementById(
+    "enable-push-button"
+  );
+
+const pushStatus =
+  document.getElementById(
+    "push-status"
+  );
+
+
+if (
+  enablePushButton
+) {
+
+  enablePushButton
+    .addEventListener(
+      "click",
+      async () => {
+
+        try {
+
+          pushStatus.textContent =
+            "Activation...";
+
+          if (
+            !("Notification" in window)
+          ) {
+            throw new Error(
+              "Notifications non supportées"
+            );
+          }
+
+          if (
+            !("serviceWorker" in navigator)
+          ) {
+            throw new Error(
+              "Service Worker non supporté"
+            );
+          }
+
+
+          const permission =
+            await Notification
+              .requestPermission();
+
+
+          if (
+            permission !== "granted"
+          ) {
+            throw new Error(
+              "Permission refusée"
+            );
+          }
+
+
+          const registration =
+            await navigator
+              .serviceWorker
+              .ready;
+
+
+          let subscription =
+            await registration
+              .pushManager
+              .getSubscription();
+
+
+          if (
+            !subscription
+          ) {
+
+            subscription =
+              await registration
+                .pushManager
+                .subscribe({
+                  userVisibleOnly:
+                    true,
+
+                  applicationServerKey:
+                    urlBase64ToUint8Array(
+                      VAPID_PUBLIC_KEY
+                    )
+                });
+
+          }
+
+
+          const json =
+            subscription.toJSON();
+
+
+          const {
+            data: {
+              session
+            }
+          } =
+            await supabaseClient
+              .auth
+              .getSession();
+
+
+          const userLabel =
+            session?.user?.email
+            || "iPhone Keira";
+
+
+          const {
+            error
+          } =
+            await supabaseClient
+              .from(
+                "push_subscriptions"
+              )
+              .insert({
+                user_label:
+                  userLabel,
+
+                endpoint:
+                  json.endpoint,
+
+                p256dh:
+                  json.keys.p256dh,
+
+                auth:
+                  json.keys.auth
+              });
+
+
+          if (
+            error
+            &&
+            error.code !== "23505"
+          ) {
+            throw error;
+          }
+
+
+          enablePushButton.textContent =
+            "✅ Notifications activées";
+
+          enablePushButton.disabled =
+            true;
+
+          pushStatus.textContent =
+            "Cet iPhone recevra les alertes Keira.";
+
+        } catch (
+          error
+        ) {
+
+          console.error(
+            "Push Keira :",
+            error
+          );
+
+          pushStatus.textContent =
+            "⚠️ "
+            + error.message;
+
+        }
+
+      }
+    );
+}
