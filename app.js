@@ -1743,14 +1743,37 @@ if (
 }
 
 
+
+
   /* =======================================================
      GLOBAL STATE
   ======================================================= */
+
+  const parisHour =
+    Number(
+      new Intl.DateTimeFormat(
+        "fr-FR",
+        {
+          timeZone: "Europe/Paris",
+          hour: "2-digit",
+          hour12: false
+        }
+      ).format(
+        new Date()
+      )
+    );
+
+
+  const wetFoodLate =
+    !wetFood
+    && parisHour >= WET_FOOD_TIME;
+
 
   const allOK =
     Boolean(
       feeder?.online
       && fountain?.online
+      && !wetFoodLate
     );
 
 
@@ -1777,11 +1800,12 @@ if (
       "health-message"
     )
     .textContent =
-      allOK
+      wetFoodLate
+        ? "🥫 Pâtée à donner à Kiki"
+        : allOK
         ? "Tout va bien 💚"
         : "Attention requise ⚠️";
-
-
+  
   document
     .getElementById(
       "updated"
