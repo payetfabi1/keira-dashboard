@@ -731,43 +731,42 @@ function maintenanceHTML(
 
     rows.push(`
       <div class="maintenance-row">
-
+    
         <span class="maintenance-icon">
           ${
-            filterAge < 12
+            filterAge < 7
               ? "✅"
-              : filterAge < 15
+              : filterAge === 7
               ? "🟠"
               : "🔴"
           }
         </span>
-
+    
         <div>
-
+    
           <strong>
             Filtre fontaine
           </strong>
-
+    
           <small>
             Changé ${daysText(filterAge)}
-
+    
             ${
-              filterAge >= 12
-              && filterAge < 15
-                ? " · à changer bientôt"
+              filterAge === 7
+                ? " · à changer aujourd'hui"
                 : ""
             }
-
+    
             ${
-              filterAge >= 15
-                ? " · à changer"
+              filterAge > 7
+                ? ` · en retard de ${filterAge - 7} jour${filterAge - 7 === 1 ? "" : "s"}`
                 : ""
             }
-
+    
           </small>
-
+    
         </div>
-
+    
       </div>
     `);
   }
