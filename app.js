@@ -1206,20 +1206,23 @@ async function loadHome() {
 
     const parisHour =
       Number(
-        new Intl.DateTimeFormat(
-          "en-GB",
-          {
-            timeZone: "Europe/Paris",
-            hour: "2-digit",
-            hourCycle: "h23"
-          }
-        )
-        .formatToParts(new Date())
-        .find(
-          part => part.type === "hour"
-        )
-        ?.value
-      );
+        new Intl
+          .DateTimeFormat(
+            "fr-FR",
+            {
+              timeZone:
+                "Europe/Paris",
+
+              hour:
+                "2-digit",
+
+              hour12:
+                false
+            }
+          )
+          .format(
+            new Date()
+          )
 
 
     wetState.textContent =
@@ -1748,15 +1751,18 @@ if (
   const parisHour =
     Number(
       new Intl.DateTimeFormat(
-        "fr-FR",
+        "en-GB",
         {
           timeZone: "Europe/Paris",
           hour: "2-digit",
-          hour12: false
+          hourCycle: "h23"
         }
-      ).format(
-        new Date()
       )
+      .formatToParts(new Date())
+      .find(
+        part => part.type === "hour"
+      )
+      ?.value
     );
 
 
