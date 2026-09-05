@@ -1206,24 +1206,20 @@ async function loadHome() {
 
     const parisHour =
       Number(
-        new Intl
-          .DateTimeFormat(
-            "fr-FR",
-            {
-              timeZone:
-                "Europe/Paris",
-
-              hour:
-                "2-digit",
-
-              hour12:
-                false
-            }
-          )
-          .format(
-            new Date()
-          )
-
+        new Intl.DateTimeFormat(
+          "en-GB",
+          {
+            timeZone: "Europe/Paris",
+            hour: "2-digit",
+            hourCycle: "h23"
+          }
+        )
+        .formatToParts(new Date())
+        .find(
+          part => part.type === "hour"
+        )
+        ?.value
+      );
 
     wetState.textContent =
       parisHour >= WET_FOOD_TIME
