@@ -782,43 +782,42 @@ function maintenanceHTML(
 
     rows.push(`
       <div class="maintenance-row">
-
+    
         <span class="maintenance-icon">
           ${
-            cleaningAge < 12
+            cleaningAge < 7
               ? "✅"
-              : cleaningAge < 15
+              : cleaningAge === 7
               ? "🟠"
               : "🔴"
           }
         </span>
-
+    
         <div>
-
+    
           <strong>
             Nettoyage fontaine
           </strong>
-
+    
           <small>
             Fait ${daysText(cleaningAge)}
-
+    
             ${
-              cleaningAge >= 12
-              && cleaningAge < 15
-                ? " · à refaire bientôt"
+              cleaningAge === 7
+                ? " · à refaire aujourd'hui"
                 : ""
             }
-
+    
             ${
-              cleaningAge >= 15
-                ? " · à refaire"
+              cleaningAge > 7
+                ? ` · en retard de ${cleaningAge - 7} jour${cleaningAge - 7 === 1 ? "" : "s"}`
                 : ""
             }
-
+    
           </small>
-
+    
         </div>
-
+    
       </div>
     `);
   }
@@ -834,45 +833,42 @@ function maintenanceHTML(
 
     rows.push(`
       <div class="maintenance-row">
-
+    
         <span class="maintenance-icon">
           ${
-            feederFilterAge < 12
+            feederFilterAge < 30
               ? "✅"
-              : feederFilterAge < 15
+              : feederFilterAge === 30
               ? "🟠"
               : "🔴"
           }
         </span>
-
+    
         <div>
-
+    
           <strong>
             Filtre croquettes
           </strong>
-
+    
           <small>
-            Changé ${daysText(
-              feederFilterAge
-            )}
-
+            Changé ${daysText(feederFilterAge)}
+    
             ${
-              feederFilterAge >= 12
-              && feederFilterAge < 15
-                ? " · à changer bientôt"
+              feederFilterAge === 30
+                ? " · à changer aujourd'hui"
                 : ""
             }
-
+    
             ${
-              feederFilterAge >= 15
-                ? " · à changer"
+              feederFilterAge > 30
+                ? ` · en retard de ${feederFilterAge - 30} jour${feederFilterAge - 30 === 1 ? "" : "s"}`
                 : ""
             }
-
+    
           </small>
-
+    
         </div>
-
+    
       </div>
     `);
   }
