@@ -1767,12 +1767,13 @@ if (
   const wetFoodLate =
     !wetFood
     && parisHour >= WET_FOOD_TIME;
-    alert(
-      `DEBUG PÂTÉE
-    heure=${parisHour}
-    wetFood=${Boolean(wetFood)}
-    wetFoodLate=${wetFoodLate}`
-    );
+  
+alert(
+   `DEBUG PÂTÉE
+ heure=${parisHour}
+ wetFood=${Boolean(wetFood)}
+ wetFoodLate=${wetFoodLate}`
+);
 
   const allOK =
     Boolean(
