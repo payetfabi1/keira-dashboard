@@ -5080,6 +5080,56 @@ async function callDeviceAction(
   return result;
 }
 
+async function syncKeiraNow() {
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient
+      .auth
+      .getSession();
+
+
+  if (!session) {
+    throw new Error(
+      "Session expirée"
+    );
+  }
+
+
+  const response =
+    await fetch(
+      "https://iayxqoevmkhkhhtdmrrk.supabase.co/functions/v1/sync-keira",
+      {
+        method:
+          "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+
+          "Authorization":
+            `Bearer ${session.access_token}`,
+        },
+
+        body:
+          JSON.stringify({
+            source:
+              "dashboard"
+          }),
+      }
+    );
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      `Sync Keira impossible (${response.status})`
+    );
+  }
+}
 
 /* =========================================================
    NETTOYAGE FONTAINE
@@ -5134,23 +5184,21 @@ if (
           );
 
 
+          await syncKeiraNow();
+          
+          
+          await loadHome();
+          
+          
           alert(
             "✅ Nettoyage fontaine enregistré"
           );
-
-
+          
+          
           fountainActionsModal
             ?.classList.add(
               "hidden"
             );
-
-
-          setTimeout(
-            () => {
-              loadHome();
-            },
-            5000
-          );
 
         } catch (
           error
@@ -5229,6 +5277,9 @@ if (
             "reset_fountain_filter"
           );
 
+          await syncKeiraNow();
+          
+          await loadHome();
 
           alert(
             "✅ Filtre fontaine remis à zéro"
@@ -5241,12 +5292,7 @@ if (
             );
 
 
-          setTimeout(
-            () => {
-              loadHome();
-            },
-            5000
-          );
+
 
         } catch (
           error
