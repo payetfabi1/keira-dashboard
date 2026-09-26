@@ -2079,7 +2079,7 @@ async function loadHistory() {
                         timeZone: "Europe/Paris"
                       }
                     )
-                    + " 💧"
+                    + ""
               )
               .join(" · ");
 
