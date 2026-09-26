@@ -5082,52 +5082,72 @@ async function callDeviceAction(
 
 async function syncKeiraNow() {
 
-  const {
-    data: {
-      session
-    }
-  } =
-    await supabaseClient
-      .auth
-      .getSession();
+  try {
 
-
-  if (!session) {
-    throw new Error(
-      "Session expirée"
-    );
-  }
-
-
-  const response =
-    await fetch(
-      "https://iayxqoevmkhkhhtdmrrk.supabase.co/functions/v1/sync-keira",
-      {
-        method:
-          "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json",
-
-          "Authorization":
-            `Bearer ${session.access_token}`,
-        },
-
-        body:
-          JSON.stringify({
-            source:
-              "dashboard"
-          }),
+    const {
+      data: {
+        session
       }
+    } =
+      await supabaseClient
+        .auth
+        .getSession();
+
+
+    if (!session) {
+
+      console.warn(
+        "Sync Keira ignoré : session expirée"
+      );
+
+      return false;
+    }
+
+
+    const response =
+      await fetch(
+        "https://iayxqoevmkhkhhtdmrrk.supabase.co/functions/v1/sync-keira",
+        {
+          method:
+            "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              `Bearer ${session.access_token}`,
+          },
+
+          body:
+            JSON.stringify({
+              source:
+                "dashboard"
+            }),
+        }
+      );
+
+
+    if (!response.ok) {
+
+      console.warn(
+        `Sync Keira impossible (${response.status})`
+      );
+
+      return false;
+    }
+
+
+    return true;
+
+  } catch (error) {
+
+    console.warn(
+      "Sync Keira non bloquant :",
+      error
     );
 
-
-  if (!response.ok) {
-
-    throw new Error(
-      `Sync Keira impossible (${response.status})`
-    );
+    return false;
   }
 }
 
