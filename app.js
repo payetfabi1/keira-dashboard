@@ -2392,7 +2392,7 @@ async function loadHistory() {
 
                 </div>
 
-                <div class="meal-times">
+                                <div class="meal-times">
                 
                   ${
                     waterTimes
@@ -2409,9 +2409,37 @@ async function loadHistory() {
                 
                 </div>
 
-              
+              </div>
+
+
+              <!-- LITIERE -->
+
+              <div class="history-goal">
+
+                <div class="history-goal-header">
+
+                  <strong>
+                    🚽 ${dayLitterVisits.length} passage${
+                      dayLitterVisits.length === 1
+                        ? ""
+                        : "s"
+                    }
+                  </strong>
+
+                </div>
+
+
+                <div class="meal-times">
+
+                  ${
+                    litterTimes
+                      || "Aucun passage"
+                  }
+
+                </div>
 
               </div>
+
 
             </article>
           `;
