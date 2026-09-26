@@ -5484,6 +5484,13 @@ if (
             || "iPhone Keira";
 
 
+          if (!session) {
+            throw new Error(
+              "Session expirée"
+            );
+          }
+          
+          
           const {
             error
           } =
@@ -5492,15 +5499,18 @@ if (
                 "push_subscriptions"
               )
               .insert({
+                user_id:
+                  session.user.id,
+          
                 user_label:
                   userLabel,
-
+          
                 endpoint:
                   json.endpoint,
-
+          
                 p256dh:
                   json.keys.p256dh,
-
+          
                 auth:
                   json.keys.auth
               });
