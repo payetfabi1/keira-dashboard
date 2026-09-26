@@ -2110,7 +2110,7 @@ async function loadHistory() {
                         timeZone: "Europe/Paris"
                       }
                     )
-                    + " 💩"
+                    + ""
               )
               .join(" · ");
 
@@ -2419,7 +2419,7 @@ async function loadHistory() {
                 <div class="history-goal-header">
 
                   <strong>
-                    🚽 ${dayLitterVisits.length} passage${
+                    💩 ${dayLitterVisits.length} passage${
                       dayLitterVisits.length === 1
                         ? ""
                         : "s"
