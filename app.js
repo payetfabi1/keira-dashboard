@@ -5297,7 +5297,7 @@ if (
             "reset_fountain_filter"
           );
 
-          // await syncKeiraNow();
+          await syncKeiraNow();
           
           await loadHome();
 
