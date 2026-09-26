@@ -1929,7 +1929,34 @@ async function loadHistory() {
     );
   }
 
-
+  const {
+    data: litterVisits,
+    error: litterVisitsError
+  } =
+    await supabaseClient
+      .from(
+        "litter_visits"
+      )
+      .select(
+        "id, detected_at"
+      )
+      .order(
+        "detected_at",
+        {
+          ascending: true
+        }
+      );
+  
+  
+  if (
+    litterVisitsError
+  ) {
+  
+    console.error(
+      "litter_visits:",
+      litterVisitsError
+    );
+  }
 
 
   const {
@@ -2056,6 +2083,38 @@ async function loadHistory() {
               )
               .join(" · ");
 
+          const dayLitterVisits =
+            (litterVisits || [])
+              .filter(
+                visit =>
+                  parisDay(
+                    new Date(
+                      visit.detected_at
+                    )
+                  ) === day
+              );
+          
+          
+          const litterTimes =
+            dayLitterVisits
+              .map(
+                visit =>
+                  new Date(
+                    visit.detected_at
+                  )
+                    .toLocaleTimeString(
+                      "fr-FR",
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        timeZone: "Europe/Paris"
+                      }
+                    )
+                    + " 💩"
+              )
+              .join(" · ");
+
+          
           const wetFoodRow =
             wetFood?.find(
               item =>
